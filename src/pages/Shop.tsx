@@ -10,8 +10,8 @@ const products = [
     id: 1,
     name: "Vintage Linen Blazer",
     brand: "Heritage Collection",
-    price: 89,
-    originalPrice: 245,
+    price: 7099,
+    originalPrice: 19599,
     image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=600&fit=crop",
     condition: "Excellent",
   },
@@ -19,8 +19,8 @@ const products = [
     id: 2,
     name: "Silk Midi Dress",
     brand: "Atelier Studio",
-    price: 125,
-    originalPrice: 380,
+    price: 9999,
+    originalPrice: 30399,
     image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=600&fit=crop",
     condition: "Like New",
   },
@@ -28,8 +28,8 @@ const products = [
     id: 3,
     name: "Cashmere Turtleneck",
     brand: "Nordic Knits",
-    price: 68,
-    originalPrice: 195,
+    price: 5439,
+    originalPrice: 15599,
     image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=600&fit=crop",
     condition: "Very Good",
   },
@@ -37,8 +37,8 @@ const products = [
     id: 4,
     name: "Leather Crossbody Bag",
     brand: "Artisan Leather Co.",
-    price: 145,
-    originalPrice: 425,
+    price: 11599,
+    originalPrice: 33999,
     image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&h=600&fit=crop",
     condition: "Excellent",
   },
@@ -46,8 +46,8 @@ const products = [
     id: 5,
     name: "Wool Trench Coat",
     brand: "Classic Tailoring",
-    price: 185,
-    originalPrice: 650,
+    price: 14799,
+    originalPrice: 51999,
     image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500&h=600&fit=crop",
     condition: "Like New",
   },
@@ -55,8 +55,8 @@ const products = [
     id: 6,
     name: "Cotton Shirt Dress",
     brand: "Minimalist Line",
-    price: 75,
-    originalPrice: 210,
+    price: 5999,
+    originalPrice: 16799,
     image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&h=600&fit=crop",
     condition: "Very Good",
   },
@@ -120,9 +120,9 @@ const Shop = () => {
                     {product.name}
                   </h3>
                   <div className="flex items-center gap-3">
-                    <span className="text-lg font-semibold">${product.price}</span>
+                    <span className="text-lg font-semibold">₹{product.price.toLocaleString('en-IN')}</span>
                     <span className="text-sm text-muted-foreground line-through">
-                      ${product.originalPrice}
+                      ₹{product.originalPrice.toLocaleString('en-IN')}
                     </span>
                   </div>
                 </div>
