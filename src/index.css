@@ -166,15 +166,4 @@ All colors MUST be HSL.
   .hover-magnetic:hover {
     transform: scale(1.05);
   }
-
-  /* Hide default cursor on desktop */
-  * {
-    cursor: none !important;
-  }
-
-  @media (max-width: 768px) {
-    * {
-      cursor: auto !important;
-    }
-  }
 }

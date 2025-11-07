@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
+import ProductDetailModal from "@/components/ProductDetailModal";
 
 // Sample product data
 const products = [
@@ -14,6 +15,10 @@ const products = [
     originalPrice: 19599,
     image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=600&fit=crop",
     condition: "Excellent",
+    description: "A classic vintage linen blazer with a timeless silhouette. Perfect for both formal and casual occasions. Features structured shoulders and a flattering fit.",
+    material: "100% Linen",
+    color: "Beige",
+    care: "Dry clean recommended. Iron on low heat if needed.",
   },
   {
     id: 2,
@@ -23,6 +28,10 @@ const products = [
     originalPrice: 30399,
     image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=600&fit=crop",
     condition: "Like New",
+    description: "Elegant silk midi dress with a flowing silhouette. Features delicate draping and a comfortable fit. Perfect for evening events and special occasions.",
+    material: "100% Silk",
+    color: "Champagne",
+    care: "Hand wash cold or dry clean. Do not bleach.",
   },
   {
     id: 3,
@@ -32,6 +41,10 @@ const products = [
     originalPrice: 15599,
     image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=600&fit=crop",
     condition: "Very Good",
+    description: "Luxuriously soft cashmere turtleneck sweater. Lightweight yet warm, perfect for layering or wearing alone. A wardrobe essential for cooler months.",
+    material: "100% Cashmere",
+    color: "Cream",
+    care: "Hand wash in cold water with mild detergent. Lay flat to dry.",
   },
   {
     id: 4,
@@ -41,6 +54,10 @@ const products = [
     originalPrice: 33999,
     image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&h=600&fit=crop",
     condition: "Excellent",
+    description: "Handcrafted leather crossbody bag with adjustable strap. Features multiple compartments for organization. Develops beautiful patina over time.",
+    material: "Full-grain Leather",
+    color: "Cognac Brown",
+    care: "Clean with leather conditioner. Avoid water exposure.",
   },
   {
     id: 5,
@@ -50,6 +67,10 @@ const products = [
     originalPrice: 51999,
     image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500&h=600&fit=crop",
     condition: "Like New",
+    description: "Statement wool trench coat with classic double-breasted design. Features a belted waist and sophisticated tailoring. A timeless investment piece.",
+    material: "80% Wool, 20% Cashmere",
+    color: "Camel",
+    care: "Professional dry clean only. Store on padded hanger.",
   },
   {
     id: 6,
@@ -59,11 +80,22 @@ const products = [
     originalPrice: 16799,
     image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&h=600&fit=crop",
     condition: "Very Good",
+    description: "Versatile cotton shirt dress with a relaxed fit. Features button-front closure and practical pockets. Can be dressed up or down effortlessly.",
+    material: "100% Organic Cotton",
+    color: "White",
+    care: "Machine wash cold. Tumble dry low or hang dry.",
   },
 ];
 
 const Shop = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleProductClick = (product: typeof products[0]) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,6 +128,7 @@ const Shop = () => {
                 className="group cursor-pointer animate-fade-in"
                 onMouseEnter={() => setHoveredId(product.id)}
                 onMouseLeave={() => setHoveredId(null)}
+                onClick={() => handleProductClick(product)}
               >
                 <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4 bg-muted/30">
                   <img
@@ -107,6 +140,10 @@ const Shop = () => {
                     className={`absolute top-4 right-4 p-2 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-300 ${
                       hoveredId === product.id ? "opacity-100 scale-100" : "opacity-0 scale-90"
                     }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add to wishlist logic
+                    }}
                   >
                     <Heart className="h-5 w-5" />
                   </button>
@@ -138,6 +175,12 @@ const Shop = () => {
           </div>
         </div>
       </main>
+
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       <Footer />
     </div>

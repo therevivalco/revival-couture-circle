@@ -11,7 +11,6 @@ import Donate from "./pages/Donate";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import SmoothScroll from "./components/SmoothScroll";
-import MagneticCursor from "./components/MagneticCursor";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +20,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <SmoothScroll>
-        <MagneticCursor />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
