@@ -10,6 +10,8 @@ import Auction from "./pages/Auction";
 import Donate from "./pages/Donate";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
+import SmoothScroll from "./components/SmoothScroll";
+import MagneticCursor from "./components/MagneticCursor";
 
 const queryClient = new QueryClient();
 
@@ -18,18 +20,21 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/sell" element={<Sell />} />
-          <Route path="/auction" element={<Auction />} />
-          <Route path="/donate" element={<Donate />} />
-          <Route path="/about" element={<About />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <SmoothScroll>
+        <MagneticCursor />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/sell" element={<Sell />} />
+            <Route path="/auction" element={<Auction />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/about" element={<About />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </SmoothScroll>
     </TooltipProvider>
   </QueryClientProvider>
 );
