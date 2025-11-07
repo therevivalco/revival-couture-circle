@@ -94,7 +94,7 @@ const Home = () => {
   const titleText = "Rewear. Relove. Revive.";
 
   return (
-    <div className="min-h-screen bg-background cursor-none">
+    <div className="min-h-screen bg-background">
       <Navigation />
 
       {/* Hero Section with Parallax */}

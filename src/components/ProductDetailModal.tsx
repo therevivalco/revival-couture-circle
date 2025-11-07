@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Heart, Share2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +38,10 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogTitle className="sr-only">{product.name}</DialogTitle>
+        <DialogDescription className="sr-only">
+          {product.brand} - {product.name} product details
+        </DialogDescription>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Left: Image Section */}
           <div className="relative bg-muted/20">
