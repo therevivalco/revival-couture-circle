@@ -13,13 +13,13 @@ const Footer = () => {
               Designed for good.<br />Worn with love.
             </p>
             <div className="flex space-x-4 pt-2">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
@@ -84,24 +84,24 @@ const Footer = () => {
             <h4 className="font-medium mb-4 text-sm tracking-wide uppercase">Support</h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
                   Shipping Info
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
                   Returns
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -113,12 +113,12 @@ const Footer = () => {
               © 2025 The Revival Co. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
                 Privacy Policy
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>
