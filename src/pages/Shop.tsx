@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ const products = [
     material: "100% Linen",
     color: "Beige",
     care: "Dry clean recommended. Iron on low heat if needed.",
+    category: "Women",
   },
   {
     id: 2,
@@ -32,6 +34,7 @@ const products = [
     material: "100% Silk",
     color: "Champagne",
     care: "Hand wash cold or dry clean. Do not bleach.",
+    category: "Women",
   },
   {
     id: 3,
@@ -45,6 +48,7 @@ const products = [
     material: "100% Cashmere",
     color: "Cream",
     care: "Hand wash in cold water with mild detergent. Lay flat to dry.",
+    category: "Men",
   },
   {
     id: 4,
@@ -58,6 +62,7 @@ const products = [
     material: "Full-grain Leather",
     color: "Cognac Brown",
     care: "Clean with leather conditioner. Avoid water exposure.",
+    category: "Accessories",
   },
   {
     id: 5,
@@ -71,6 +76,7 @@ const products = [
     material: "80% Wool, 20% Cashmere",
     color: "Camel",
     care: "Professional dry clean only. Store on padded hanger.",
+    category: "Women",
   },
   {
     id: 6,
@@ -84,18 +90,41 @@ const products = [
     material: "100% Organic Cotton",
     color: "White",
     care: "Machine wash cold. Tumble dry low or hang dry.",
+    category: "Men",
   },
 ];
 
 const Shop = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>("All Items");
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    if (category) {
+      setActiveFilter(category);
+    }
+  }, [searchParams]);
 
   const handleProductClick = (product: typeof products[0]) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
+
+  const handleFilterClick = (filter: string) => {
+    setActiveFilter(filter);
+    if (filter === "All Items") {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category: filter });
+    }
+  };
+
+  const filteredProducts = activeFilter === "All Items" 
+    ? products 
+    : products.filter(product => product.category === activeFilter);
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,16 +142,39 @@ const Shop = () => {
 
           {/* Filters */}
           <div className="flex flex-wrap gap-3 mb-12">
-            <Button variant="outline" className="rounded-full">All Items</Button>
-            <Button variant="outline" className="rounded-full">Women</Button>
-            <Button variant="outline" className="rounded-full">Men</Button>
-            <Button variant="outline" className="rounded-full">Accessories</Button>
-            <Button variant="outline" className="rounded-full">New Arrivals</Button>
+            <Button 
+              variant={activeFilter === "All Items" ? "default" : "outline"} 
+              className="rounded-full"
+              onClick={() => handleFilterClick("All Items")}
+            >
+              All Items
+            </Button>
+            <Button 
+              variant={activeFilter === "Women" ? "default" : "outline"} 
+              className="rounded-full"
+              onClick={() => handleFilterClick("Women")}
+            >
+              Women
+            </Button>
+            <Button 
+              variant={activeFilter === "Men" ? "default" : "outline"} 
+              className="rounded-full"
+              onClick={() => handleFilterClick("Men")}
+            >
+              Men
+            </Button>
+            <Button 
+              variant={activeFilter === "Accessories" ? "default" : "outline"} 
+              className="rounded-full"
+              onClick={() => handleFilterClick("Accessories")}
+            >
+              Accessories
+            </Button>
           </div>
 
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="group cursor-pointer animate-fade-in"

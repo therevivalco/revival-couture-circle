@@ -12,9 +12,9 @@ const Contact = () => {
             Have questions? We'd love to hear from you.
           </p>
           <div className="space-y-4">
-            <p><strong>Email:</strong> hello@therevivalco.com</p>
-            <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-            <p><strong>Hours:</strong> Monday - Friday, 9am - 6pm EST</p>
+            <p><strong>Email:</strong> therevivalco.in@gmail.com</p>
+            <p><strong>Phone:</strong> +91 98765 43210</p>
+            <p><strong>Hours:</strong> Monday - Friday, 9am - 6pm IST</p>
           </div>
         </div>
       </main>
