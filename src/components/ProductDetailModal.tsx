@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Heart, Share2, X } from "lucide-react";
@@ -32,6 +32,17 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
   if (!product) return null;
 
   const sizes = ["XS", "S", "M", "L", "XL"];
@@ -46,7 +57,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0" onInteractOutside={(e) => e.preventDefault()}>
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <DialogDescription className="sr-only">
           {product.brand} - {product.name} product details
@@ -71,7 +82,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
           </div>
 
           {/* Right: Product Details */}
-          <div className="p-8 lg:p-12 space-y-6">
+          <div className="p-8 lg:p-12 space-y-6 overflow-y-auto">
             {/* Brand & Title */}
             <div>
               <p className="text-sm text-muted-foreground uppercase tracking-wider mb-2">
