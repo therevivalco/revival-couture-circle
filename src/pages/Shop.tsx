@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Heart, ArrowRight } from "lucide-react";
+import { Heart, Search } from "lucide-react";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import {
   Select,
@@ -14,126 +14,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 // Sample product data
 const products = [
-  {
-    id: 1,
-    name: "Vintage Linen Blazer",
-    brand: "Heritage Collection",
-    price: 7099,
-    originalPrice: 19599,
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=600&fit=crop",
-    condition: "Excellent",
-    description: "A classic vintage linen blazer with a timeless silhouette. Perfect for both formal and casual occasions. Features structured shoulders and a flattering fit.",
-    material: "100% Linen",
-    color: "Beige",
-    care: "Dry clean recommended. Iron on low heat if needed.",
-    category: "Women",
-    isNew: true,
-  },
-  {
-    id: 2,
-    name: "Silk Midi Dress",
-    brand: "Atelier Studio",
-    price: 9999,
-    originalPrice: 30399,
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=600&fit=crop",
-    condition: "Like New",
-    description: "Elegant silk midi dress with a flowing silhouette. Features delicate draping and a comfortable fit. Perfect for evening events and special occasions.",
-    material: "100% Silk",
-    color: "Champagne",
-    care: "Hand wash cold or dry clean. Do not bleach.",
-    category: "Women",
-    isTrending: true,
-  },
-  {
-    id: 3,
-    name: "Cashmere Turtleneck",
-    brand: "Nordic Knits",
-    price: 5439,
-    originalPrice: 15599,
-    image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=600&fit=crop",
-    condition: "Very Good",
-    description: "Luxuriously soft cashmere turtleneck sweater. Lightweight yet warm, perfect for layering or wearing alone. A wardrobe essential for cooler months.",
-    material: "100% Cashmere",
-    color: "Cream",
-    care: "Hand wash in cold water with mild detergent. Lay flat to dry.",
-    category: "Men",
-  },
-  {
-    id: 4,
-    name: "Leather Crossbody Bag",
-    brand: "Artisan Leather Co.",
-    price: 11599,
-    originalPrice: 33999,
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&h=600&fit=crop",
-    condition: "Excellent",
-    description: "Handcrafted leather crossbody bag with adjustable strap. Features multiple compartments for organization. Develops beautiful patina over time.",
-    material: "Full-grain Leather",
-    color: "Cognac Brown",
-    care: "Clean with leather conditioner. Avoid water exposure.",
-    category: "Accessories",
-    isNew: true,
-  },
-  {
-    id: 5,
-    name: "Wool Trench Coat",
-    brand: "Classic Tailoring",
-    price: 14799,
-    originalPrice: 51999,
-    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500&h=600&fit=crop",
-    condition: "Like New",
-    description: "Statement wool trench coat with classic double-breasted design. Features a belted waist and sophisticated tailoring. A timeless investment piece.",
-    material: "80% Wool, 20% Cashmere",
-    color: "Camel",
-    care: "Professional dry clean only. Store on padded hanger.",
-    category: "Women",
-  },
-  {
-    id: 6,
-    name: "Cotton Shirt Dress",
-    brand: "Minimalist Line",
-    price: 5999,
-    originalPrice: 16799,
-    image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&h=600&fit=crop",
-    condition: "Very Good",
-    description: "Versatile cotton shirt dress with a relaxed fit. Features button-front closure and practical pockets. Can be dressed up or down effortlessly.",
-    material: "100% Organic Cotton",
-    color: "White",
-    care: "Machine wash cold. Tumble dry low or hang dry.",
-    category: "Men",
-    isTrending: true,
-  },
-  {
-    id: 7,
-    name: "Leather Ankle Boots",
-    brand: "Urban Walkers",
-    price: 12599,
-    originalPrice: 35999,
-    image: "/src/assets/boots.jpg",
-    condition: "Excellent",
-    description: "Stylish leather ankle boots with a sturdy heel. Perfect for everyday wear.",
-    material: "Full-grain Leather",
-    color: "Black",
-    care: "Wipe clean with a damp cloth. Use leather protector.",
-    category: "Women",
-  },
-  {
-    id: 8,
-    name: "Denim Jacket",
-    brand: "Re-Stitched",
-    price: 4599,
-    originalPrice: 12999,
-    image: "/src/assets/denim-jacket.jpg.png",
-    condition: "Good",
-    description: "Classic denim jacket with a modern fit. A versatile wardrobe staple.",
-    material: "98% Cotton, 2% Elastane",
-    color: "Blue",
-    care: "Machine wash cold. Tumble dry low.",
-    category: "Kids",
-    isNew: true,
-  },
+    {
+        id: 1,
+        name: "Organic Pima Tee",
+        material: "Pima Cotton",
+        price: 48,
+        image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&h=600&fit=crop",
+        category: "For Her",
+      },
+      {
+        id: 2,
+        name: "Vegan Leather Jacket",
+        material: "Recycled PU",
+        price: 120,
+        image: "/src/assets/jacket.jpg",
+        category: "For Her",
+      },
+      {
+        id: 3,
+        name: "Straight-Leg Denim",
+        material: "Organic Denim",
+        price: 88,
+        image: "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=500&h=600&fit=crop",
+        category: "For Him",
+      },
+      {
+        id: 4,
+        name: "Merino Wool Scarf",
+        material: "Merino Wool",
+        price: 60,
+        image: "/src/assets/clothes.jpg",
+        category: "Accessories",
+      },
+      {
+        id: 5,
+        name: "The Everyday Sneaker",
+        material: "Recycled Materials",
+        price: 105,
+        image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&h=600&fit=crop",
+        category: "For Him",
+      },
+      {
+        id: 6,
+        name: "Peace Silk Blouse",
+        material: "Ahimsa Silk",
+        price: 145,
+        image: "https://images.unsplash.com/photo-1581655353564-df123a43e246?w=500&h=600&fit=crop",
+        category: "For Her",
+      },
+      {
+        id: 7,
+        name: "Linen Trousers",
+        material: "100% Linen",
+        price: 75,
+        image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=600&fit=crop",
+        category: "For Her",
+      },
+      {
+        id: 8,
+        name: "Cotton Crewneck Sweater",
+        material: "Organic Cotton",
+        price: 80,
+        image: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=500&h=600&fit=crop",
+        category: "For Him",
+      },
+];
+
+const categoryHighlights = [
+    { name: "For Her", image: "/src/assets/image1.png" },
+    { name: "For Him", image: "/src/assets/denim-jacket.jpg.png" },
+    { name: "For Kids", image: "/src/assets/kid.jpg" },
+    { name: "Accessories", image: "/src/assets/boots.jpg" },
 ];
 
 const MotionButton = motion(Button);
@@ -144,12 +99,12 @@ const ProductCard = ({ product, onProductClick }) => {
 
   return (
     <motion.div
-      className="group cursor-pointer relative"
+      className="group cursor-pointer"
       onClick={() => onProductClick(product)}
-      whileHover={{ y: -8, boxShadow: "0 10px 20px rgba(0,0,0,0.08)" }}
+      whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-4 bg-muted/30">
+      <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-neutral-100">
         <motion.img
           src={product.image}
           alt={product.name}
@@ -159,90 +114,68 @@ const ProductCard = ({ product, onProductClick }) => {
           transition={{ duration: 0.4 }}
         />
         <MotionHeart
-          className={`absolute top-4 right-4 h-6 w-6 cursor-pointer drop-shadow-sm`}
+          className={`absolute top-3 right-3 h-6 w-6 text-white cursor-pointer drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] opacity-0 group-hover:opacity-100`}
           onClick={(e) => {
             e.stopPropagation();
             setIsWishlisted(!isWishlisted);
           }}
           variants={{
-            initial: { scale: 1, opacity: 0.7 },
-            hover: { scale: 1.2, opacity: 1 },
-            toggled: { scale: 1.1, fill: "#FF6B6B", color: "#FF6B6B", opacity: 1 },
+            initial: { scale: 1,  fill: "transparent" },
+            toggled: { scale: 1, fill: "#000", color: "#000" },
           }}
           initial="initial"
-          whileHover="hover"
           animate={isWishlisted ? "toggled" : "initial"}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          transition={{ duration: 0.2, ease: "easeIn" }}
         />
-        {(product.isNew || product.isTrending) && (
-          <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-olive/90 backdrop-blur-sm">
-            <span className="text-xs font-medium text-white">{product.isNew ? "New" : "Trending"}</span>
-          </div>
-        )}
       </div>
-      <div className="space-y-1">
-        <p className="text-sm text-muted-foreground">{product.brand}</p>
-        <h3 className="text-lg font-serif font-semibold group-hover:text-primary transition-colors">
-          {product.name}
-        </h3>
-        <div className="flex items-center gap-3">
-          <span className="text-lg font-semibold">₹{product.price.toLocaleString("en-IN")}</span>
-          <span className="text-sm text-muted-foreground line-through">
-            ₹{product.originalPrice.toLocaleString("en-IN")}
-          </span>
-        </div>
+      <div className="space-y-1 text-center">
+        <h3 className="text-base font-sans">{product.name}</h3>
+        <p className="text-sm text-neutral-500">{product.material}</p>
+        <p className="text-base font-medium">£{product.price}</p>
       </div>
     </motion.div>
   );
 };
 
-const ProductCarousel = ({ category, products, onProductClick, onSeeAllClick }) => {
-  const carouselRef = useRef(null);
+const ProductCarousel = ({ title, products, onProductClick }) => {
+    const carouselRef = useRef(null);
   
-  return (
-    <div className="mb-16">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-serif font-bold">{category}</h2>
-        <Button variant="link" className="text-olive" onClick={() => onSeeAllClick(category)}>
-          See All <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
-      <div className="relative">
-        <motion.div ref={carouselRef} className="flex gap-8 overflow-x-auto pb-4 -mb-4"
-          drag="x"
-          dragConstraints={{ left: -100 * products.length, right: 0 }}
-        >
-          {products.map((product) => (
-            <div key={product.id} className="w-[280px] flex-shrink-0">
-              <ProductCard product={product} onProductClick={onProductClick} />
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </div>
-  );
+    return (
+      <section className="py-12">
+        <h2 className="text-4xl font-serif text-center mb-8">{title}</h2>
+        <div className="relative">
+          <motion.div ref={carouselRef} className="flex gap-6 overflow-x-auto pb-4 -mb-4 scrollbar-hide">
+            {products.map((product) => (
+              <div key={product.id} className="w-[280px] flex-shrink-0">
+                <ProductCard product={product} onProductClick={onProductClick} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+    );
 };
-
-
+  
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("All Items");
+  const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
+  const [visibleProducts, setVisibleProducts] = useState(6);
 
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const textOpacity = useTransform(scrollYProgress, [0.1, 0.5], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0.1, 0.5], ["0%", "-50%"]);
 
   useEffect(() => {
     const category = searchParams.get("category");
-    setActiveFilter(category || "All Items");
+    setActiveFilter(category || "All");
   }, [searchParams]);
 
   const handleProductClick = (product) => {
@@ -251,48 +184,37 @@ const Shop = () => {
   };
 
   const handleFilterClick = (filter) => {
-    if (filter === "All Items") {
+    setVisibleProducts(6); // Reset visible products on filter change
+    if (filter === "All") {
       setSearchParams({});
     } else {
       setSearchParams({ category: filter });
     }
   };
 
-  const sortProducts = (products) => {
+  const sortProducts = (productsToSort) => {
+    const sorted = [...productsToSort];
     switch (sortBy) {
       case "price-asc":
-        return [...products].sort((a, b) => a.price - b.price);
+        return sorted.sort((a, b) => a.price - b.price);
       case "price-desc":
-        return [...products].sort((a, b) => b.price - a.price);
-      case "condition":
-        const conditionOrder = { "Like New": 0, "Excellent": 1, "Very Good": 2, "Good": 3 };
-        return [...products].sort((a, b) => conditionOrder[a.condition] - conditionOrder[b.condition]);
+        return sorted.sort((a, b) => b.price - a.price);
       default: // newest
-        return [...products].reverse();
+        return sorted.sort((a, b) => b.id - a.id);
     }
   };
-
-  const displayedProducts = sortProducts(
-    activeFilter === "All Items"
-      ? products
-      : products.filter(p => p.category === activeFilter)
-  );
   
-  const categories = ["Women", "Men", "Accessories", "Kids"];
-  const carousels = categories.map(category => ({
-    category: `${category}'s Collection`,
-    products: products.filter(p => p.category === category)
-  }));
-  
+  const filteredProducts = products.filter(p => activeFilter === "All" || p.category === activeFilter);
+  const displayedProducts = sortProducts(filteredProducts);
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-800">
+    <div className="bg-[#FDFDF9] text-neutral-800 font-sans">
       <Navigation />
 
       {/* Hero Section */}
       <motion.section
         ref={heroRef}
-        className="relative h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden"
+        className="relative h-[85vh] flex items-center justify-center overflow-hidden"
       >
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
@@ -301,80 +223,106 @@ const Shop = () => {
             y: parallaxY,
           }}
         />
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-black/20" />
         <motion.div
-          className="relative z-10 text-center text-white p-6"
+          className="relative z-10 text-center text-white p-4"
           style={{ opacity: textOpacity, y: textY }}
         >
           <motion.h1
-            className="text-4xl md:text-6xl font-serif font-bold mb-4"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-5xl md:text-7xl font-serif mb-4"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
           >
-            Shop the Revival
+            Conscious Craft, Timeless Design.
           </motion.h1>
           <motion.p
-            className="text-lg md:text-2xl"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-base md:text-lg max-w-xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
-            Curated Pre-Loved Luxury
+            Discover our new collection of sustainably made, timeless pieces designed to last a lifetime.
           </motion.p>
-          <motion.div 
-            className="mt-8 flex gap-4 justify-center"
+          <MotionButton
+            className="mt-8 rounded-full bg-olive px-8 py-3 text-base font-medium text-white transition-colors hover:bg-olive/90"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
-            <Button variant="outline" className="text-white border-white" onClick={() => handleFilterClick("Women")}>Women</Button>
-            <Button variant="outline" className="text-white border-white" onClick={() => handleFilterClick("Men")}>Men</Button>
-            <Button variant="outline" className="text-white border-white" onClick={() => handleFilterClick("Accessories")}>Accessories</Button>
-          </motion.div>
+            Discover the Collection
+          </MotionButton>
         </motion.div>
       </motion.section>
       
-      <main className="pt-16 pb-16">
-        <div className="container mx-auto px-6">
-          {/* Filters and Sorter */}
-          <div className="sticky top-16 bg-neutral-50/80 backdrop-blur-sm z-20 py-4 mb-12">
-            <div className="flex justify-between items-center">
-              <div className="flex flex-wrap gap-3">
-                {["All Items", "Women", "Men", "Accessories", "Kids"].map(filter => (
-                  <Button
-                    key={filter}
-                    variant={activeFilter === filter ? "default" : "outline"}
-                    className="rounded-full"
-                    onClick={() => handleFilterClick(filter)}
-                  >
-                    {filter}
-                  </Button>
+      <main className="container mx-auto px-4 md:px-8">
+        {/* Category Highlights */}
+        <section className="py-16">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {categoryHighlights.map(cat => (
+                    <motion.div 
+                        key={cat.name} 
+                        className="relative rounded-lg overflow-hidden group aspect-[3/4] md:aspect-[4/5]"
+                        whileHover={{ scale: 1.03 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                    >
+                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
+                            <h3 className="text-2xl font-serif mb-2">{cat.name}</h3>
+                            <Button variant="link" className="text-white p-0 h-auto font-semibold group-hover:underline">Shop Now</Button>
+                        </div>
+                    </motion.div>
                 ))}
-              </div>
-              <Select onValueChange={setSortBy} defaultValue={sortBy}>
-                <SelectTrigger className="w-[180px] rounded-full">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                  <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                  <SelectItem value="condition">Condition</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
-          </div>
+        </section>
 
-          {activeFilter !== "All Items" ? (
+        {/* Category Carousels */}
+        <ProductCarousel title="For Her" products={products.filter(p => p.category === 'For Her')} onProductClick={handleProductClick} />
+        <ProductCarousel title="For Him" products={products.filter(p => p.category === 'For Him')} onProductClick={handleProductClick} />
+
+
+        {/* Product Catalog Section */}
+        <section className="py-12">
+            <div className="sticky top-[60px] bg-[#FDFDF9]/80 backdrop-blur-sm z-20 py-4 mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <span>Filter:</span>
+                        {["All", "For Her", "For Him", "Kids", "Accessories"].map(filter => (
+                            <Button
+                                key={filter}
+                                variant="ghost"
+                                className={`rounded-full px-4 h-8 text-sm ${activeFilter === filter ? "bg-neutral-200" : ""}`}
+                                onClick={() => handleFilterClick(filter)}
+                            >
+                                {filter}
+                            </Button>
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <div className="relative w-full md:w-48">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500"/>
+                            <Input placeholder="Search" className="rounded-full pl-9 h-9"/>
+                        </div>
+                        <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                            <SelectTrigger className="w-40 rounded-full h-9">
+                                <SelectValue placeholder="Sort by" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="newest">Newest</SelectItem>
+                                <SelectItem value="price-asc">Price: Low–High</SelectItem>
+                                <SelectItem value="price-desc">Price: High–Low</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </div>
+
             <motion.div
-              key={activeFilter}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+              layout
+              className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10"
             >
-              {displayedProducts.map((product) => (
+              {displayedProducts.slice(0, visibleProducts).map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
@@ -382,52 +330,19 @@ const Shop = () => {
                 />
               ))}
             </motion.div>
-          ) : (
-            <>
-              {carousels.map(({ category, products }) => (
-                <ProductCarousel
-                  key={category}
-                  category={category}
-                  products={sortProducts(products)}
-                  onProductClick={handleProductClick}
-                  onSeeAllClick={() => handleFilterClick(category.replace("'s Collection", ""))}
-                />
-              ))}
-            </>
-          )}
 
-        </div>
-
-        {/* Storytelling Section */}
-        <motion.section 
-          className="mt-24 py-20 bg-olive text-white"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="container mx-auto px-6 text-center">
-            <motion.h2 
-              className="text-4xl font-serif mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              Reviving Luxury with Purpose
-            </motion.h2>
-            <motion.p 
-              className="text-lg max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              Every piece carries a story. We are committed to sustainability and conscious consumption, giving timeless fashion a new life.
-            </motion.p>
-          </div>
-        </motion.section>
-
+            {visibleProducts < displayedProducts.length && (
+                <div className="text-center mt-12">
+                    <Button 
+                        variant="outline" 
+                        className="rounded-full px-8"
+                        onClick={() => setVisibleProducts(prev => prev + 6)}
+                    >
+                        Load More
+                    </Button>
+                </div>
+            )}
+        </section>
       </main>
 
       <ProductDetailModal
