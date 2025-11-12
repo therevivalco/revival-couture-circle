@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Navigation from "@/components/Navigation";
@@ -353,11 +353,11 @@ const ProductCard = ({ product, onProductClick }) => {
   );
 };
 
-const ProductCarousel = ({ title, products, onProductClick }) => {
+const ProductCarousel = forwardRef(({ title, products, onProductClick }, ref) => {
     const carouselRef = useRef(null);
   
     return (
-      <section className="py-12">
+      <section ref={ref} className="py-12">
         <h2 className="text-4xl font-serif text-center mb-8">{title}</h2>
         <div className="relative">
           <motion.div ref={carouselRef} className="flex gap-6 overflow-x-auto pb-4 -mb-4 scrollbar-hide">
@@ -370,7 +370,7 @@ const ProductCarousel = ({ title, products, onProductClick }) => {
         </div>
       </section>
     );
-};
+});
   
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -381,6 +381,28 @@ const Shop = () => {
   const [visibleProducts, setVisibleProducts] = useState(6);
 
   const heroRef = useRef(null);
+  const forHerRef = useRef(null);
+  const forHimRef = useRef(null);
+  const kidsRef = useRef(null);
+  const accessoriesRef = useRef(null);
+  const catalogRef = useRef(null);
+
+  const sectionRefs = {
+    "For Her": forHerRef,
+    "For Him": forHimRef,
+    "Kids": kidsRef,
+    "Accessories": accessoriesRef,
+  };
+
+  const handleScrollTo = (ref) => {
+    if (ref.current) {
+      window.scrollTo({
+        top: ref.current.offsetTop - 100, // Adjusted for sticky header
+        behavior: "smooth",
+      });
+    }
+  };
+
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -400,11 +422,19 @@ const Shop = () => {
   };
 
   const handleFilterClick = (filter) => {
-    setVisibleProducts(6); // Reset visible products on filter change
+    setVisibleProducts(6);
     if (filter === "All") {
       setSearchParams({});
     } else {
       setSearchParams({ category: filter });
+    }
+    handleScrollTo(catalogRef);
+  };
+
+  const handleCategoryClick = (category) => {
+    const targetRef = sectionRefs[category];
+    if (targetRef) {
+        handleScrollTo(targetRef)
     }
   };
 
@@ -465,6 +495,7 @@ const Shop = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            onClick={() => handleScrollTo(catalogRef)}
           >
             Discover the Collection
           </MotionButton>
@@ -478,9 +509,10 @@ const Shop = () => {
                 {categoryHighlights.map(cat => (
                     <motion.div 
                         key={cat.name} 
-                        className="relative rounded-lg overflow-hidden group aspect-[3/4] md:aspect-[4/5]"
+                        className="relative rounded-lg overflow-hidden group aspect-[3/4] md:aspect-[4/5] cursor-pointer"
                         whileHover={{ scale: 1.03 }}
                         transition={{ duration: 0.4, ease: "easeInOut" }}
+                        onClick={() => handleCategoryClick(cat.name)}
                     >
                         <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
@@ -494,12 +526,13 @@ const Shop = () => {
         </section>
 
         {/* Category Carousels */}
-        <ProductCarousel title="For Her" products={products.filter(p => p.category === 'For Her')} onProductClick={handleProductClick} />
-        <ProductCarousel title="For Him" products={products.filter(p => p.category === 'For Him')} onProductClick={handleProductClick} />
-
+        <ProductCarousel ref={forHerRef} title="For Her" products={products.filter(p => p.category === 'For Her')} onProductClick={handleProductClick} />
+        <ProductCarousel ref={forHimRef} title="For Him" products={products.filter(p => p.category === 'For Him')} onProductClick={handleProductClick} />
+        <ProductCarousel ref={kidsRef} title="Kids" products={products.filter(p => p.category === 'Kids')} onProductClick={handleProductClick} />
+        <ProductCarousel ref={accessoriesRef} title="Accessories" products={products.filter(p => p.category === 'Accessories')} onProductClick={handleProductClick} />
 
         {/* Product Catalog Section */}
-        <section className="py-12">
+        <section ref={catalogRef} className="py-12">
             <div className="sticky top-[60px] bg-[#FDFDF9]/80 backdrop-blur-sm z-20 py-4 mb-8">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="flex flex-wrap items-center gap-2 text-sm">
