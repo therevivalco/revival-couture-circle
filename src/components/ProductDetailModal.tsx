@@ -35,11 +35,15 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Pause global smooth scrolling if present
+      ;(window as any).__lenis?.stop?.();
     } else {
       document.body.style.overflow = 'auto';
+      ;(window as any).__lenis?.start?.();
     }
     return () => {
       document.body.style.overflow = 'auto';
+      ;(window as any).__lenis?.start?.();
     };
   }, [isOpen]);
 
