@@ -20,6 +20,9 @@ const SmoothScroll = ({ children }: SmoothScrollProps) => {
 
     lenisRef.current = lenis;
 
+    // Expose lenis globally so other components (e.g., modals) can pause/resume scrolling
+    ;(window as any).__lenis = lenis;
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -28,7 +31,13 @@ const SmoothScroll = ({ children }: SmoothScrollProps) => {
     requestAnimationFrame(raf);
 
     return () => {
-      lenis.destroy();
+      try {
+        lenis.destroy();
+      } finally {
+        if ((window as any).__lenis === lenis) {
+          (window as any).__lenis = null;
+        }
+      }
     };
   }, []);
 
