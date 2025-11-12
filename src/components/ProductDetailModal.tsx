@@ -35,11 +35,15 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Pause global smooth scrolling if present
+      ;(window as any).__lenis?.stop?.();
     } else {
       document.body.style.overflow = 'auto';
+      ;(window as any).__lenis?.start?.();
     }
     return () => {
       document.body.style.overflow = 'auto';
+      ;(window as any).__lenis?.start?.();
     };
   }, [isOpen]);
 
@@ -62,7 +66,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
         <DialogDescription className="sr-only">
           {product.brand} - {product.name} product details
         </DialogDescription>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-y-auto max-h-[90vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-y-auto overscroll-y-contain max-h-[90vh]">
           {/* Left: Image Section */}
           <div className="relative bg-muted/20">
             <button
