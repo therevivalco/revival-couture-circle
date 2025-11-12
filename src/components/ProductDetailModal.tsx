@@ -33,17 +33,56 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const { addToCart } = useCart();
 
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const lenis = (window as any).__lenis;
+
+    const preventWindowScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
+    const preventKeys = (e: KeyboardEvent) => {
+      const keys = [
+        'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Space', 'Spacebar'
+      ];
+      if (keys.includes(e.key) || keys.includes((e as any).code)) {
+        e.preventDefault();
+      }
+    };
+
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      // Pause global smooth scrolling if present
-      ;(window as any).__lenis?.stop?.();
+      body.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+      (html.style as any).overscrollBehavior = 'none';
+      lenis?.stop?.();
+      // Block scroll events from reaching the page
+      window.addEventListener('wheel', preventWindowScroll, { passive: false });
+      window.addEventListener('touchmove', preventWindowScroll, { passive: false });
+      document.addEventListener('wheel', preventWindowScroll, { passive: false });
+      document.addEventListener('touchmove', preventWindowScroll, { passive: false });
+      document.addEventListener('keydown', preventKeys as any, { passive: false } as any);
     } else {
-      document.body.style.overflow = 'auto';
-      ;(window as any).__lenis?.start?.();
+      body.style.overflow = '';
+      html.style.overflow = '';
+      (html.style as any).overscrollBehavior = '';
+      lenis?.start?.();
+      window.removeEventListener('wheel', preventWindowScroll as any);
+      window.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('wheel', preventWindowScroll as any);
+      document.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('keydown', preventKeys as any);
     }
+
     return () => {
-      document.body.style.overflow = 'auto';
-      ;(window as any).__lenis?.start?.();
+      body.style.overflow = '';
+      html.style.overflow = '';
+      (html.style as any).overscrollBehavior = '';
+      lenis?.start?.();
+      window.removeEventListener('wheel', preventWindowScroll as any);
+      window.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('wheel', preventWindowScroll as any);
+      document.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('keydown', preventKeys as any);
     };
   }, [isOpen]);
 
@@ -61,12 +100,12 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 flex flex-col" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 flex flex-col overscroll-y-contain" onInteractOutside={(e) => e.preventDefault()} onWheelCapture={(e) => e.stopPropagation()} onTouchMoveCapture={(e) => e.stopPropagation()}>
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <DialogDescription className="sr-only">
           {product.brand} - {product.name} product details
         </DialogDescription>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-y-auto overscroll-y-contain max-h-[90vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-y-auto overscroll-contain max-h-[90vh]">
           {/* Left: Image Section */}
           <div className="relative bg-muted/20">
             <button
