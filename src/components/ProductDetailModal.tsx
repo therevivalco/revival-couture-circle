@@ -57,12 +57,12 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 flex flex-col" onInteractOutside={(e) => e.preventDefault()}>
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <DialogDescription className="sr-only">
           {product.brand} - {product.name} product details
         </DialogDescription>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-y-auto max-h-[90vh]">
           {/* Left: Image Section */}
           <div className="relative bg-muted/20">
             <button
