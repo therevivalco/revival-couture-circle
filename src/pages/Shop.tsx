@@ -180,7 +180,7 @@ const products = [
       },
       {
         id: 21,
-        name: "Frock",
+        name: "Girl's Frock",
         material: "Cotton",
         price: 45,
         image: "/src/assets/kids - frock.jpg",
@@ -188,7 +188,7 @@ const products = [
       },
       {
         id: 22,
-        name: "Outfit Set",
+        name: "Girl's Blue Cord Set",
         material: "Cotton",
         price: 75,
         image: "/src/assets/kids - outfits.jpg",
@@ -281,6 +281,22 @@ const products = [
         price: 80,
         image: "/src/assets/accesory - woman belt.jpg",
         category: "Accessories",
+      },
+      {
+        id: 34,
+        name: "PJs Set",
+        material: "Pure Cotton",
+        price: 45,
+        image: "/src/assets/kids - pjs.jpg",
+        category: "Kids",
+      },
+      {
+        id: 35,
+        name: "Boys Superhero Set",
+        material: "Synthetic Blend",
+        price: 75,
+        image: "/src/assets/kids - captain america.jpg",
+        category: "Kids",
       },
 ];
 
