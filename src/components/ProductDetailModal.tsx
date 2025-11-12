@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Heart, Share2, X } from "lucide-react";
@@ -32,6 +32,22 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = 'var(--scrollbar-width, 0px)';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [isOpen]);
+
   if (!product) return null;
 
   const sizes = ["XS", "S", "M", "L", "XL"];
@@ -46,12 +62,12 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 flex flex-col">
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <DialogDescription className="sr-only">
           {product.brand} - {product.name} product details
         </DialogDescription>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-y-auto max-h-[90vh]">
           {/* Left: Image Section */}
           <div className="relative bg-muted/20">
             <button
