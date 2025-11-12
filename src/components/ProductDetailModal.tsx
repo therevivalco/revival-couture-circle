@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { Heart, Share2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCart } from "../context/CartContext.tsx";
 
 interface Product {
   id: number;
@@ -29,11 +30,19 @@ interface ProductDetailModalProps {
 const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProps) => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToCart } = useCart();
 
   if (!product) return null;
 
   const sizes = ["XS", "S", "M", "L", "XL"];
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+  const handleAddToCart = () => {
+    if (product && selectedSize) {
+      addToCart(product, selectedSize);
+      onClose(); 
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -146,6 +155,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
                 size="lg" 
                 className="flex-1 rounded-full"
                 disabled={!selectedSize}
+                onClick={handleAddToCart}
               >
                 {selectedSize ? "Add to Bag" : "Select Size"}
               </Button>
