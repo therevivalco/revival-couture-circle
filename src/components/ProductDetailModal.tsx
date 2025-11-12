@@ -41,32 +41,48 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
       e.preventDefault();
     };
 
+    const preventKeys = (e: KeyboardEvent) => {
+      const keys = [
+        'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Space', 'Spacebar'
+      ];
+      if (keys.includes(e.key) || keys.includes((e as any).code)) {
+        e.preventDefault();
+      }
+    };
+
     if (isOpen) {
       body.style.overflow = 'hidden';
       html.style.overflow = 'hidden';
-      // Prevent scroll chaining to the page
-      ;(html.style as any).overscrollBehavior = 'none';
-      // Pause global smooth scrolling if present
+      (html.style as any).overscrollBehavior = 'none';
       lenis?.stop?.();
-      // Block scroll events from reaching the window
+      // Block scroll events from reaching the page
       window.addEventListener('wheel', preventWindowScroll, { passive: false });
       window.addEventListener('touchmove', preventWindowScroll, { passive: false });
+      document.addEventListener('wheel', preventWindowScroll, { passive: false });
+      document.addEventListener('touchmove', preventWindowScroll, { passive: false });
+      document.addEventListener('keydown', preventKeys as any, { passive: false } as any);
     } else {
       body.style.overflow = '';
       html.style.overflow = '';
-      ;(html.style as any).overscrollBehavior = '';
+      (html.style as any).overscrollBehavior = '';
       lenis?.start?.();
       window.removeEventListener('wheel', preventWindowScroll as any);
       window.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('wheel', preventWindowScroll as any);
+      document.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('keydown', preventKeys as any);
     }
 
     return () => {
       body.style.overflow = '';
       html.style.overflow = '';
-      ;(html.style as any).overscrollBehavior = '';
+      (html.style as any).overscrollBehavior = '';
       lenis?.start?.();
       window.removeEventListener('wheel', preventWindowScroll as any);
       window.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('wheel', preventWindowScroll as any);
+      document.removeEventListener('touchmove', preventWindowScroll as any);
+      document.removeEventListener('keydown', preventKeys as any);
     };
   }, [isOpen]);
 
