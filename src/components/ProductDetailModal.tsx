@@ -33,17 +33,40 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const { addToCart } = useCart();
 
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const lenis = (window as any).__lenis;
+
+    const preventWindowScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+      // Prevent scroll chaining to the page
+      ;(html.style as any).overscrollBehavior = 'none';
       // Pause global smooth scrolling if present
-      ;(window as any).__lenis?.stop?.();
+      lenis?.stop?.();
+      // Block scroll events from reaching the window
+      window.addEventListener('wheel', preventWindowScroll, { passive: false });
+      window.addEventListener('touchmove', preventWindowScroll, { passive: false });
     } else {
-      document.body.style.overflow = 'auto';
-      ;(window as any).__lenis?.start?.();
+      body.style.overflow = '';
+      html.style.overflow = '';
+      ;(html.style as any).overscrollBehavior = '';
+      lenis?.start?.();
+      window.removeEventListener('wheel', preventWindowScroll as any);
+      window.removeEventListener('touchmove', preventWindowScroll as any);
     }
+
     return () => {
-      document.body.style.overflow = 'auto';
-      ;(window as any).__lenis?.start?.();
+      body.style.overflow = '';
+      html.style.overflow = '';
+      ;(html.style as any).overscrollBehavior = '';
+      lenis?.start?.();
+      window.removeEventListener('wheel', preventWindowScroll as any);
+      window.removeEventListener('touchmove', preventWindowScroll as any);
     };
   }, [isOpen]);
 
