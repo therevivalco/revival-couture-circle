@@ -84,7 +84,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 flex flex-col" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 flex flex-col overscroll-y-contain" onInteractOutside={(e) => e.preventDefault()} onWheelCapture={(e) => e.stopPropagation()} onTouchMoveCapture={(e) => e.stopPropagation()}>
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <DialogDescription className="sr-only">
           {product.brand} - {product.name} product details
