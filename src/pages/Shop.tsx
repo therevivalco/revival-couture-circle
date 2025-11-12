@@ -85,10 +85,10 @@ const products = [
 ];
 
 const categoryHighlights = [
-    { name: "For Her", image: "/src/assets/image1.png" },
-    { name: "For Him", image: "/src/assets/denim-jacket.jpg.png" },
-    { name: "For Kids", image: "/src/assets/kid.jpg" },
-    { name: "Accessories", image: "/src/assets/boots.jpg" },
+    { name: "For Her", image: "/src/assets/for her.jpg" },
+    { name: "For Him", image: "/src/assets/for him.png" },
+    { name: "For Kids", image: "/src/assets/for kids.jpg" },
+    { name: "Accessories", image: "/src/assets/accesories.jpg" },
 ];
 
 const MotionButton = motion(Button);
