@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { useWishlist } from "../context/WishlistContext";
 
 // Sample product data
 const products = [
@@ -416,7 +417,20 @@ const MotionButton = motion(Button);
 const MotionHeart = motion(Heart);
 
 const ProductCard = ({ product, onProductClick }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+  const isWishlisted = isInWishlist(product.id);
+
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+      setShowHeartAnimation(true);
+      setTimeout(() => setShowHeartAnimation(false), 1000);
+    }
+  };
 
   return (
     <motion.div
@@ -436,18 +450,25 @@ const ProductCard = ({ product, onProductClick }) => {
         />
         <MotionHeart
           className={`absolute top-3 right-3 h-6 w-6 text-white cursor-pointer drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] opacity-0 group-hover:opacity-100`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsWishlisted(!isWishlisted);
-          }}
+          onClick={handleWishlistClick}
           variants={{
-            initial: { scale: 1,  fill: "transparent" },
-            toggled: { scale: 1, fill: "#000", color: "#000" },
+            initial: { scale: 1, fill: "transparent" },
+            toggled: { scale: 1, fill: "#fff", color: "#fff" },
           }}
           initial="initial"
           animate={isWishlisted ? "toggled" : "initial"}
           transition={{ duration: 0.2, ease: "easeIn" }}
         />
+        {showHeartAnimation && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: [0, 1, 0], scale: [0.5, 2, 2.5] }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          >
+            <Heart className="h-20 w-20 fill-white text-white" />
+          </motion.div>
+        )}
       </div>
       <div className="space-y-1 text-center">
         <h3 className="text-base font-sans">{product.name}</h3>

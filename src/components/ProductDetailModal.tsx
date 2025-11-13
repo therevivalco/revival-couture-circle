@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Share2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext.tsx";
+import { useWishlist } from "../context/WishlistContext";
 
 interface Product {
   id: number;
@@ -29,8 +30,19 @@ interface ProductDetailModalProps {
 
 const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProps) => {
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = product ? isInWishlist(product.id) : false;
+
+  const handleWishlistToggle = () => {
+    if (product) {
+      if (isWishlisted) {
+        removeFromWishlist(product.id);
+      } else {
+        addToWishlist(product);
+      }
+    }
+  };
 
   useEffect(() => {
     const html = document.documentElement;
@@ -217,10 +229,10 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
                 size="lg"
                 variant="outline"
                 className="rounded-full"
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={handleWishlistToggle}
               >
                 <Heart
-                  className={`h-5 w-5 ${isWishlisted ? "fill-current text-rose" : ""}`}
+                  className={`h-5 w-5 ${isWishlisted ? "fill-current text-primary" : ""}`}
                 />
               </Button>
               <Button size="lg" variant="outline" className="rounded-full">

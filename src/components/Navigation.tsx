@@ -1,13 +1,15 @@
-import { ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Menu, X, Heart } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
 
   const navLinks = [
     { name: "Shop", path: "/shop" },
@@ -46,7 +48,22 @@ const Navigation = () => {
           </div>
 
           {/* Right side icons */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Link to="/wishlist">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative"
+              >
+                <Heart className="h-5 w-5" />
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
+                    {wishlistItems.length}
+                  </span>
+                )}
+              </Button>
+            </Link>
+            
             <Link to="/cart">
               <Button 
                 variant="ghost" 
