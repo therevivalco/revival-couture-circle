@@ -30,7 +30,7 @@ interface ProductDetailModalProps {
 const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProps) => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, toggleCart } = useCart();
 
   useEffect(() => {
     const html = document.documentElement;
@@ -94,7 +94,8 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const handleAddToCart = () => {
     if (product && selectedSize) {
       addToCart(product, selectedSize);
-      onClose(); 
+      onClose();
+      toggleCart();
     }
   };
 

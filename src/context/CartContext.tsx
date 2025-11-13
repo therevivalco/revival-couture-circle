@@ -18,7 +18,7 @@ interface CartContextType {
   cartItems: CartItem[];
   isCartOpen: boolean;
   addToCart: (product: Product, size: string) => void;
-  removeFromCart: (productId: number) => void;
+  removeFromCart: (productId: number, size: string) => void;
   clearCart: () => void;
   toggleCart: () => void;
 }
@@ -55,8 +55,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     });
   };
 
-  const removeFromCart = (productId: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  const removeFromCart = (productId: number, size: string) => {
+    setCartItems(prevItems => prevItems.filter(item => !(item.id === productId && item.size === size)));
   };
 
   const clearCart = () => {
