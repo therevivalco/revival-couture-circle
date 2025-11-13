@@ -1,9 +1,10 @@
 
 import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
-import { X } from 'lucide-react';
+import { X, ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
+import { Link } from 'react-router-dom';
 
 const CartPage = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
@@ -16,9 +17,21 @@ const CartPage = () => {
     <div>
       <Navigation />
       <main className="container mx-auto px-6 py-24">
-        <h1 className="text-3xl font-serif font-bold mb-8">Your Cart</h1>
+        <div className="flex items-center gap-4 mb-8">
+          <Link to="/shop">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-serif font-bold">Your Cart</h1>
+        </div>
         {cartItems.length === 0 ? (
-          <p>Your cart is empty.</p>
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-6">Your cart is empty.</p>
+            <Link to="/shop">
+              <Button>Continue Shopping</Button>
+            </Link>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
@@ -54,8 +67,11 @@ const CartPage = () => {
                 <p>Total</p>
                 <p>₹{total.toLocaleString('en-IN')}</p>
               </div>
-              <Button className="w-full">Proceed to Checkout</Button>
-              <Button variant="outline" className="w-full mt-2" onClick={clearCart}>Clear Cart</Button>
+              <Button className="w-full" size="lg">Proceed to Checkout</Button>
+              <Link to="/shop" className="block mt-2">
+                <Button variant="outline" className="w-full">Continue Shopping</Button>
+              </Link>
+              <Button variant="ghost" className="w-full mt-2" onClick={clearCart}>Clear Cart</Button>
             </div>
           </div>
         )}

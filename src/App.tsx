@@ -16,7 +16,6 @@ import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import SmoothScroll from "./components/SmoothScroll";
 import ScrollToTop from "./components/ScrollToTop";
-import Cart from "./components/Cart";
 import CartPage from "./pages/Cart";
 
 const queryClient = new QueryClient();
@@ -44,7 +43,6 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Cart />
         </BrowserRouter>
       </SmoothScroll>
     </TooltipProvider>
