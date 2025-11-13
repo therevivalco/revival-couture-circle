@@ -15,11 +15,11 @@ import {
 } from "@/components/ui/carousel";
 
 const carouselImages = [
-    { src: "/src/assets/image1.png", alt: "Clothes in boxes", title: "Give Your Clothes a Second Life.", description: "Partner with us to reduce textile waste and help communities in need." },
-    { src: "/src/assets/kid.jpg", alt: "Kid with Clothes", title: "From Your Closet to a New Home.", description: "Your donations help us provide clothing to those who need it most." },
-    { src: "/src/assets/clothes.jpg", alt: "Line of garments", title: "Make a Difference, One Garment at a Time.", description: "Each piece of clothing you donate contributes to a more sustainable future." },
-    { src: "/src/assets/donation.jpg", alt: "Clothes being given", title: "Join Our Movement of Sustainable Fashion.", description: "Be part of the solution to textile waste." },
-    { src: "/src/assets/sustainability-image.jpg", alt: "Donated clothes in hands", title: "Declutter with a Purpose.", description: "Give your pre-loved items a new beginning." },
+    { src: "/assets/image1.png", alt: "Clothes in boxes", title: "Give Your Clothes a Second Life.", description: "Partner with us to reduce textile waste and help communities in need." },
+    { src: "/assets/kid.jpg", alt: "Kid with Clothes", title: "From Your Closet to a New Home.", description: "Your donations help us provide clothing to those who need it most." },
+    { src: "/assets/clothes.jpg", alt: "Line of garments", title: "Make a Difference, One Garment at a Time.", description: "Each piece of clothing you donate contributes to a more sustainable future." },
+    { src: "/assets/donation.jpg", alt: "Clothes being given", title: "Join Our Movement of Sustainable Fashion.", description: "Be part of the solution to textile waste." },
+    { src: "/assets/sustainability-image.jpg", alt: "Donated clothes in hands", title: "Declutter with a Purpose.", description: "Give your pre-loved items a new beginning." },
 ];
 
 const Donate = () => {

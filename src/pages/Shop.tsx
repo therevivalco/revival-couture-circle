@@ -27,7 +27,7 @@ const products = [
         price: 3840,
         originalPrice: 5600,
         condition: "Like New",
-        image: "/src/assets/woman - tshirt1.jpg",
+        image: "/assets/woman - tshirt1.jpg",
         category: "For Her",
       },
       {
@@ -38,7 +38,7 @@ const products = [
         price: 9600,
         originalPrice: 12000,
         condition: "Excellent",
-        image: "/src/assets/woman - tshirt.jpg",
+        image: "/assets/woman - tshirt.jpg",
         category: "For Her",
       },
       {
@@ -49,7 +49,7 @@ const products = [
         price: 7040,
         originalPrice: 9600,
         condition: "Like New",
-        image: "/src/assets/men - baggy jeans.jpg",
+        image: "/assets/men - baggy jeans.jpg",
         category: "For Him",
       },
       {
@@ -60,7 +60,7 @@ const products = [
         price: 4800,
         originalPrice: 7200,
         condition: "Excellent",
-        image: "/src/assets/clothes.jpg",
+        image: "/assets/clothes.jpg",
         category: "Accessories",
       },
       {
@@ -71,7 +71,7 @@ const products = [
         price: 8400,
         originalPrice: 11200,
         condition: "Like New",
-        image: "/src/assets/men - linen.jpg",
+        image: "/assets/men - linen.jpg",
         category: "For Him",
       },
       {
@@ -82,7 +82,7 @@ const products = [
         price: 11600,
         originalPrice: 15200,
         condition: "Like New",
-        image: "/src/assets/men - polos.jpg",
+        image: "/assets/men - polos.jpg",
         category: "For Him",
       },
       {
@@ -93,7 +93,7 @@ const products = [
         price: 6000,
         originalPrice: 8800,
         condition: "Good",
-        image: "/src/assets/men - trousers.jpg",
+        image: "/assets/men - trousers.jpg",
         category: "For Him",
       },
       {
@@ -104,7 +104,7 @@ const products = [
         price: 6400,
         originalPrice: 9600,
         condition: "Excellent",
-        image: "/src/assets/men - sweatshirt.jpg",
+        image: "/assets/men - sweatshirt.jpg",
         category: "For Him",
       },
       {
@@ -115,7 +115,7 @@ const products = [
         price: 7200,
         originalPrice: 10400,
         condition: "Like New",
-        image: "/src/assets/woman - White Flared Pants.jpg",
+        image: "/assets/woman - White Flared Pants.jpg",
         category: "For Her",
       },
       {
@@ -126,7 +126,7 @@ const products = [
         price: 7600,
         originalPrice: 11200,
         condition: "Excellent",
-        image: "/src/assets/woman - baggy jeans.jpg",
+        image: "/assets/woman - baggy jeans.jpg",
         category: "For Her",
       },
       {
@@ -137,7 +137,7 @@ const products = [
         price: 2800,
         originalPrice: 4000,
         condition: "Good",
-        image: "/src/assets/woman - crop top.jpg",
+        image: "/assets/woman - crop top.jpg",
         category: "For Her",
       },
       {
@@ -148,7 +148,7 @@ const products = [
         price: 8800,
         originalPrice: 12800,
         condition: "Like New",
-        image: "/src/assets/woman - jumpsuits.jpg",
+        image: "/assets/woman - jumpsuits.jpg",
         category: "For Her",
       },
       {
@@ -159,7 +159,7 @@ const products = [
         price: 6800,
         originalPrice: 9600,
         condition: "Excellent",
-        image: "/src/assets/woman - sundress.jpg",
+        image: "/assets/woman - sundress.jpg",
         category: "For Her",
       },
       {
@@ -170,7 +170,7 @@ const products = [
         price: 8000,
         originalPrice: 11200,
         condition: "Like New",
-        image: "/src/assets/woman - sweaters.jpg",
+        image: "/assets/woman - sweaters.jpg",
         category: "For Her",
       },
       {
@@ -181,7 +181,7 @@ const products = [
         price: 5600,
         originalPrice: 8800,
         condition: "Good",
-        image: "/src/assets/men - hoodie.jpg",
+        image: "/assets/men - hoodie.jpg",
         category: "For Him",
       },
       {
@@ -192,7 +192,7 @@ const products = [
         price: 12000,
         originalPrice: 18000,
         condition: "Excellent",
-        image: "/src/assets/men - jacket.jpg",
+        image: "/assets/men - jacket.jpg",
         category: "For Him",
       },
       {
@@ -203,7 +203,7 @@ const products = [
         price: 7200,
         originalPrice: 10400,
         condition: "Like New",
-        image: "/src/assets/men - jeans.jpg",
+        image: "/assets/men - jeans.jpg",
         category: "For Him",
       },
       {
@@ -214,7 +214,7 @@ const products = [
         price: 20000,
         originalPrice: 28000,
         condition: "Excellent",
-        image: "/src/assets/men - linen suit.jpg",
+        image: "/assets/men - linen suit.jpg",
         category: "For Him",
       },
       {
@@ -225,7 +225,7 @@ const products = [
         price: 4400,
         originalPrice: 6400,
         condition: "Good",
-        image: "/src/assets/men - polo shirt.jpg",
+        image: "/assets/men - polo shirt.jpg",
         category: "For Him",
       },
       {
@@ -236,7 +236,7 @@ const products = [
         price: 5200,
         originalPrice: 8000,
         condition: "Excellent",
-        image: "/src/assets/kids - dungrees.jpg",
+        image: "/assets/kids - dungrees.jpg",
         category: "Kids",
       },
       {
@@ -247,7 +247,7 @@ const products = [
         price: 3600,
         originalPrice: 5600,
         condition: "Like New",
-        image: "/src/assets/kids - frock.jpg",
+        image: "/assets/kids - frock.jpg",
         category: "Kids",
       },
       {
@@ -258,7 +258,7 @@ const products = [
         price: 6000,
         originalPrice: 8800,
         condition: "Like New",
-        image: "/src/assets/kids - outfits.jpg",
+        image: "/assets/kids - outfits.jpg",
         category: "Kids",
       },
       {
@@ -269,7 +269,7 @@ const products = [
         price: 9600,
         originalPrice: 14400,
         condition: "Good",
-        image: "/src/assets/accesory - bag.jpg",
+        image: "/assets/accesory - bag.jpg",
         category: "Accessories",
       },
       {
@@ -280,7 +280,7 @@ const products = [
         price: 3200,
         originalPrice: 4800,
         condition: "Like New",
-        image: "/src/assets/accesory - bracelet sets.jpg",
+        image: "/assets/accesory - bracelet sets.jpg",
         category: "Accessories",
       },
       {
@@ -291,7 +291,7 @@ const products = [
         price: 6400,
         originalPrice: 9600,
         condition: "Excellent",
-        image: "/src/assets/accesory - clutch.jpg",
+        image: "/assets/accesory - clutch.jpg",
         category: "Accessories",
       },
       {
@@ -302,7 +302,7 @@ const products = [
         price: 8800,
         originalPrice: 12800,
         condition: "Like New",
-        image: "/src/assets/woman - kurti.jpg",
+        image: "/assets/woman - kurti.jpg",
         category: "For Her",
       },
       {
@@ -313,7 +313,7 @@ const products = [
         price: 6800,
         originalPrice: 10400,
         condition: "Excellent",
-        image: "/src/assets/woman - kurti2.jpg",
+        image: "/assets/woman - kurti2.jpg",
         category: "For Her",
       },
       {
@@ -324,7 +324,7 @@ const products = [
         price: 8000,
         originalPrice: 11200,
         condition: "Like New",
-        image: "/src/assets/woman - crop top1.jpg",
+        image: "/assets/woman - crop top1.jpg",
         category: "For Her",
       },
       {
@@ -335,7 +335,7 @@ const products = [
         price: 3600,
         originalPrice: 5600,
         condition: "Excellent",
-        image: "/src/assets/accesory - men ring.jpg",
+        image: "/assets/accesory - men ring.jpg",
         category: "Accessories",
       },
       {
@@ -346,7 +346,7 @@ const products = [
         price: 6000,
         originalPrice: 8800,
         condition: "Like New",
-        image: "/src/assets/accesory - necklace.jpg",
+        image: "/assets/accesory - necklace.jpg",
         category: "Accessories",
       },
       {
@@ -357,7 +357,7 @@ const products = [
         price: 9600,
         originalPrice: 14400,
         condition: "Excellent",
-        image: "/src/assets/accesory - ring.jpg",
+        image: "/assets/accesory - ring.jpg",
         category: "Accessories",
       },
       {
@@ -368,7 +368,7 @@ const products = [
         price: 3200,
         originalPrice: 4800,
         condition: "Good",
-        image: "/src/assets/accesory - wallet.jpg",
+        image: "/assets/accesory - wallet.jpg",
         category: "Accessories",
       },
       {
@@ -379,7 +379,7 @@ const products = [
         price: 6400,
         originalPrice: 9600,
         condition: "Like New",
-        image: "/src/assets/accesory - woman belt.jpg",
+        image: "/assets/accesory - woman belt.jpg",
         category: "Accessories",
       },
       {
@@ -390,7 +390,7 @@ const products = [
         price: 3600,
         originalPrice: 5600,
         condition: "Excellent",
-        image: "/src/assets/kids - pjs.jpg",
+        image: "/assets/kids - pjs.jpg",
         category: "Kids",
       },
       {
@@ -401,16 +401,16 @@ const products = [
         price: 6000,
         originalPrice: 8800,
         condition: "Like New",
-        image: "/src/assets/kids - captain america.jpg",
+        image: "/assets/kids - captain america.jpg",
         category: "Kids",
       },
 ];
 
 const categoryHighlights = [
-    { name: "For Her", image: "/src/assets/for her.jpg" },
-    { name: "For Him", image: "/src/assets/for him.png" },
-    { name: "For Kids", image: "/src/assets/for kids.jpg" },
-    { name: "Accessories", image: "/src/assets/accesories.jpg" },
+    { name: "For Her", image: "/assets/for her.jpg" },
+    { name: "For Him", image: "/assets/for him.png" },
+    { name: "For Kids", image: "/assets/for kids.jpg" },
+    { name: "Accessories", image: "/assets/accesories.jpg" },
 ];
 
 const MotionButton = motion(Button);
@@ -599,7 +599,7 @@ const Shop = () => {
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/src/assets/hero-image.jpg')",
+            backgroundImage: "url('/assets/hero-image.jpg')",
             y: parallaxY,
           }}
         />

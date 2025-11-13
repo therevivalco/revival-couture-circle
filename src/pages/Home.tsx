@@ -10,8 +10,6 @@ import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
 import RevealText from "@/components/RevealText";
 import ParallaxImage from "@/components/ParallaxImage";
-import heroImage from "@/assets/hero-image.jpg";
-import sustainabilityImage from "@/assets/sustainability-image.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -110,7 +108,7 @@ const Home = () => {
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: `url(${heroImage})`,
+              backgroundImage: `url("/assets/hero-image.jpg")`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
@@ -240,7 +238,7 @@ const Home = () => {
             </RevealText>
 
             <ParallaxImage
-              src={sustainabilityImage}
+              src="/assets/sustainability-image.jpg"
               alt="Sustainable fashion"
               className="h-[600px] rounded-2xl"
               speed={0.3}

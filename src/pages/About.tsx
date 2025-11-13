@@ -1,6 +1,5 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import sustainabilityImage from "@/assets/sustainability-image.jpg";
 
 const About = () => {
   return (
@@ -23,7 +22,7 @@ const About = () => {
           <div className="max-w-4xl mx-auto mb-20">
             <div className="relative h-[400px] rounded-2xl overflow-hidden mb-12">
               <img 
-                src={sustainabilityImage}
+                src="/assets/sustainability-image.jpg"
                 alt="Sustainable fashion mission"
                 className="w-full h-full object-cover"
               />
