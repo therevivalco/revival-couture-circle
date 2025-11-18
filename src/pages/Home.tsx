@@ -113,46 +113,51 @@ const Home = () => {
               backgroundPosition: 'center',
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background" />
         </motion.div>
 
         <div className="relative z-10 text-center px-6">
-          <h1
-            ref={titleRef}
-            className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-8 tracking-tight leading-tight"
-            style={{ perspective: '1000px' }}
-          >
-            {titleText.split('').map((char, index) => (
-              <span
-                key={index}
-                className="char inline-block"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                {char === ' ' ? '\u00A0' : char}
-              </span>
-            ))}
-          </h1>
+          <div className="bg-background/30 backdrop-blur-sm rounded-3xl p-8 md:p-12 max-w-5xl mx-auto">
+            <h1
+              ref={titleRef}
+              className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-8 tracking-tight leading-tight text-foreground"
+              style={{ 
+                perspective: '1000px',
+                textShadow: '0 2px 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              {titleText.split('').map((char, index) => (
+                <span
+                  key={index}
+                  className="char inline-block"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </h1>
 
-          <RevealText delay={1.5}>
-            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-              Discover luxury pre-loved fashion with purpose. Every piece tells a story, every purchase makes an impact.
-            </p>
-          </RevealText>
+            <RevealText delay={1.5}>
+              <p className="text-lg md:text-xl text-foreground/90 mb-12 max-w-2xl mx-auto leading-relaxed" style={{ textShadow: '0 1px 10px rgba(0, 0, 0, 0.3)' }}>
+                Discover luxury pre-loved fashion with purpose. Every piece tells a story, every purchase makes an impact.
+              </p>
+            </RevealText>
 
-          <RevealText delay={1.8}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/shop">
-                <Button size="lg" className="text-base px-8 py-6 rounded-full hover-magnetic">
-                  Explore Collections
-                </Button>
-              </Link>
-              <Link to="/sell">
-                <Button size="lg" variant="outline" className="text-base px-8 py-6 rounded-full hover-magnetic">
-                  Sell With Us
-                </Button>
-              </Link>
-            </div>
-          </RevealText>
+            <RevealText delay={1.8}>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/shop">
+                  <Button size="lg" className="text-base px-8 py-6 rounded-full hover-magnetic">
+                    Explore Collections
+                  </Button>
+                </Link>
+                <Link to="/sell">
+                  <Button size="lg" variant="outline" className="text-base px-8 py-6 rounded-full hover-magnetic">
+                    Sell With Us
+                  </Button>
+                </Link>
+              </div>
+            </RevealText>
+          </div>
         </div>
       </motion.section>
 
