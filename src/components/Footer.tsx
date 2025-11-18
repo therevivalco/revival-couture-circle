@@ -13,7 +13,7 @@ const Footer = () => {
               Designed for good.<br />Worn with love.
             </p>
             <div className="flex space-x-4 pt-2">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://www.instagram.com/therevivalco.in/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
