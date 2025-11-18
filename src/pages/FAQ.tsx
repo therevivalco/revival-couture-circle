@@ -12,7 +12,7 @@ const FAQ = () => {
           <AccordionItem value="item-1">
             <AccordionTrigger>How does shipping work?</AccordionTrigger>
             <AccordionContent>
-              We offer free standard shipping on all orders over $50. Standard shipping typically takes 5-7 business days.
+              We offer free standard shipping on all orders over Rs.1999. Standard shipping typically takes 5-7 business days.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">

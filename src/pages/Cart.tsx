@@ -10,7 +10,7 @@ const CartPage = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = 400;
+  const shipping = 40;
   const total = subtotal + shipping;
 
   return (

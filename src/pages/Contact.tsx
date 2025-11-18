@@ -13,7 +13,8 @@ const Contact = () => {
           </p>
           <div className="space-y-4">
             <p><strong>Email:</strong> therevivalco.in@gmail.com</p>
-            <p><strong>Phone:</strong> +91 98765 43210</p>
+            <p><strong>Phone:</strong> +91 83697 64587</p>
+            
             <p><strong>Hours:</strong> Monday - Friday, 9am - 6pm IST</p>
           </div>
         </div>
