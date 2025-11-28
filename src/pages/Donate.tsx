@@ -13,19 +13,34 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const carouselImages = [
-    { src: "/assets/image1.png", alt: "Clothes in boxes", title: "Give Your Clothes a Second Life.", description: "Partner with us to reduce textile waste and help communities in need." },
-    { src: "/assets/kid.jpg", alt: "Kid with Clothes", title: "From Your Closet to a New Home.", description: "Your donations help us provide clothing to those who need it most." },
-    { src: "/assets/clothes.jpg", alt: "Line of garments", title: "Make a Difference, One Garment at a Time.", description: "Each piece of clothing you donate contributes to a more sustainable future." },
-    { src: "/assets/donation.jpg", alt: "Clothes being given", title: "Join Our Movement of Sustainable Fashion.", description: "Be part of the solution to textile waste." },
-    { src: "/assets/sustainability-image.jpg", alt: "Donated clothes in hands", title: "Declutter with a Purpose.", description: "Give your pre-loved items a new beginning." },
+  { src: "/assets/image1.png", alt: "Clothes in boxes", title: "Give Your Clothes a Second Life.", description: "Partner with us to reduce textile waste and help communities in need." },
+  { src: "/assets/kid.jpg", alt: "Kid with Clothes", title: "From Your Closet to a New Home.", description: "Your donations help us provide clothing to those who need it most." },
+  { src: "/assets/clothes.jpg", alt: "Line of garments", title: "Make a Difference, One Garment at a Time.", description: "Each piece of clothing you donate contributes to a more sustainable future." },
+  { src: "/assets/donation.jpg", alt: "Clothes being given", title: "Join Our Movement of Sustainable Fashion.", description: "Be part of the solution to textile waste." },
+  { src: "/assets/sustainability-image.jpg", alt: "Donated clothes in hands", title: "Declutter with a Purpose.", description: "Give your pre-loved items a new beginning." },
 ];
 
 const Donate = () => {
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleScheduleClick = () => {
+    if (!user) {
+      toast.error("Please log in to schedule a donation");
+      navigate("/login");
+    } else {
+      // Proceed with scheduling logic (placeholder)
+      console.log("Schedule pickup");
+    }
+  };
 
   useEffect(() => {
     if (!api) {
@@ -59,7 +74,7 @@ const Donate = () => {
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6">
               Ready to Donate? Schedule Your Pickup.
             </h1>
-            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full px-10 py-6 text-base">
+            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full px-10 py-6 text-base" onClick={handleScheduleClick}>
               Schedule My Donation Pickup
             </Button>
             <p className="text-muted-foreground mt-4">
@@ -73,38 +88,38 @@ const Donate = () => {
 
         {/* 2. Emotional Hero Section */}
         <section className="relative h-[60vh] overflow-hidden">
-            <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
-                <CarouselContent>
-                    {carouselImages.map((image, index) => (
-                        <CarouselItem key={index}>
-                            <div className="relative h-[60vh]">
-                                <img src={image.src} alt={image.alt} className="absolute inset-0 w-full h-full object-cover object-center" style={{ filter: 'brightness(0.6)' }} />
-                                <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white p-6 bg-black/30">
-                                    <div>
-                                        <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-                                            {image.title}
-                                        </h2>
-                                        <p className="text-lg md:text-xl max-w-2xl">
-                                            {image.description}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-20" />
-                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-20" />
-            </Carousel>
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-                {carouselImages.map((_, index) => (
-                    <button
-                        key={index}
-                        onMouseEnter={() => api?.scrollTo(index)}
-                        className={`h-2 w-2 rounded-full ${index === current ? 'bg-white' : 'bg-white/50'} transition-all`}
-                    />
-                ))}
-            </div>
+          <Carousel setApi={setApi} className="w-full h-full" opts={{ loop: true }}>
+            <CarouselContent>
+              {carouselImages.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative h-[60vh]">
+                    <img src={image.src} alt={image.alt} className="absolute inset-0 w-full h-full object-cover object-center" style={{ filter: 'brightness(0.6)' }} />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white p-6 bg-black/30">
+                      <div>
+                        <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">
+                          {image.title}
+                        </h2>
+                        <p className="text-lg md:text-xl max-w-2xl">
+                          {image.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-20" />
+            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-20" />
+          </Carousel>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+            {carouselImages.map((_, index) => (
+              <button
+                key={index}
+                onMouseEnter={() => api?.scrollTo(index)}
+                className={`h-2 w-2 rounded-full ${index === current ? 'bg-white' : 'bg-white/50'} transition-all`}
+              />
+            ))}
+          </div>
         </section>
 
         <div className="container mx-auto px-6">
@@ -205,7 +220,7 @@ const Donate = () => {
             <p className="text-lg text-muted-foreground mb-8">
               Your donation can change lives. Start your contribution today.
             </p>
-            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full text-base px-10 py-6">
+            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full text-base px-10 py-6" onClick={handleScheduleClick}>
               Schedule My Donation Pickup
             </Button>
           </div>

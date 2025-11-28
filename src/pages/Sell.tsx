@@ -3,11 +3,28 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Upload, CheckCircle, DollarSign, Package } from "lucide-react";
 
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { toast } from "sonner";
+
 const Sell = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      toast.error("Please log in to sell items");
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) return <div>Loading...</div>;
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6">
           {/* Header */}

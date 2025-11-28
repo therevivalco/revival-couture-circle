@@ -1,4 +1,4 @@
-import { ShoppingBag, Menu, X, Heart } from "lucide-react";
+import { ShoppingBag, Menu, X, Heart, User } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -38,9 +38,8 @@ const Navigation = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium tracking-wide transition-colors hover:text-primary ${
-                  isActive(link.path) ? "text-primary" : "text-muted-foreground"
-                }`}
+                className={`text-sm font-medium tracking-wide transition-colors hover:text-primary ${isActive(link.path) ? "text-primary" : "text-muted-foreground"
+                  }`}
               >
                 {link.name}
               </Link>
@@ -49,10 +48,16 @@ const Navigation = () => {
 
           {/* Right side icons */}
           <div className="flex items-center space-x-2">
+            <Link to="/account">
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+
             <Link to="/wishlist">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="relative"
               >
                 <Heart className="h-5 w-5" />
@@ -63,11 +68,11 @@ const Navigation = () => {
                 )}
               </Button>
             </Link>
-            
+
             <Link to="/cart">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="relative"
               >
                 <ShoppingBag className="h-5 w-5" />
@@ -99,9 +104,8 @@ const Navigation = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`text-sm font-medium tracking-wide transition-colors hover:text-primary py-2 ${
-                    isActive(link.path) ? "text-primary" : "text-muted-foreground"
-                  }`}
+                  className={`text-sm font-medium tracking-wide transition-colors hover:text-primary py-2 ${isActive(link.path) ? "text-primary" : "text-muted-foreground"
+                    }`}
                 >
                   {link.name}
                 </Link>

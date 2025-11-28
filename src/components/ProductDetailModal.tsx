@@ -5,6 +5,9 @@ import { Heart, Share2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext.tsx";
 import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Product {
   id: number;
@@ -32,9 +35,16 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const [selectedSize, setSelectedSize] = useState<string>("");
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const isWishlisted = product ? isInWishlist(product.id) : false;
 
   const handleWishlistToggle = () => {
+    if (!user) {
+      toast.error("Please log in to add items to your wishlist");
+      navigate("/login");
+      return;
+    }
     if (product) {
       if (isWishlisted) {
         removeFromWishlist(product.id);
@@ -104,6 +114,11 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Please log in to add items to your bag");
+      navigate("/login");
+      return;
+    }
     if (product && selectedSize) {
       addToCart(product, selectedSize);
       onClose();
@@ -161,7 +176,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
             <div>
               <h3 className="font-semibold mb-2">Product Details</h3>
               <p className="text-muted-foreground leading-relaxed">
-                {product.description || 
+                {product.description ||
                   `A timeless ${product.name.toLowerCase()} from ${product.brand}, carefully curated for conscious fashion lovers. This pre-loved piece is authenticated and ready to be part of your sustainable wardrobe.`
                 }
               </p>
@@ -175,11 +190,10 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`w-14 h-14 rounded-lg border-2 transition-all ${
-                      selectedSize === size
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border hover:border-primary"
-                    }`}
+                    className={`w-14 h-14 rounded-lg border-2 transition-all ${selectedSize === size
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:border-primary"
+                      }`}
                   >
                     {size}
                   </button>
@@ -217,8 +231,8 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-6">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="flex-1 rounded-full"
                 disabled={!selectedSize}
                 onClick={handleAddToCart}

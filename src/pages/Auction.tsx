@@ -21,6 +21,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Search, Heart, Clock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // Mock Data for Auction Items
 const auctionItems = [
@@ -98,9 +101,8 @@ const AuctionItemCard = ({ item }) => (
             </span>
           </div>
           <div
-            className={`flex items-center text-sm font-medium ${
-              item.endsSoon ? "text-rose" : "text-muted-foreground"
-            }`}
+            className={`flex items-center text-sm font-medium ${item.endsSoon ? "text-rose" : "text-muted-foreground"
+              }`}
           >
             <Clock className="h-4 w-4 mr-1" />
             {item.timeLeft}
@@ -117,6 +119,17 @@ const AuctionItemCard = ({ item }) => (
 const AuctionPage = () => {
   const [step, setStep] = useState(1);
   const progress = (step / 3) * 100;
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleProtectedAction = (action: () => void) => {
+    if (!user) {
+      toast.error("Please log in to participate in auctions");
+      navigate("/login");
+    } else {
+      action();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50 font-sans">
@@ -143,6 +156,13 @@ const AuctionPage = () => {
             <TabsTrigger
               value="list"
               className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-md"
+              onClick={(e) => {
+                if (!user) {
+                  e.preventDefault();
+                  toast.error("Please log in to list an item");
+                  navigate("/login");
+                }
+              }}
             >
               List an Item
             </TabsTrigger>
