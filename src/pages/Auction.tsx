@@ -25,10 +25,11 @@ import { toast } from "sonner";
 import AuctionForm from "@/components/AuctionForm";
 import AuctionCard from "@/components/AuctionCard";
 import AuctionDetailModal from "@/components/AuctionDetailModal";
+import { apiFetch } from "@/lib/api";
 
 // Fetch auctions from API
 const fetchAuctions = async () => {
-  const response = await fetch('/api/auctions');
+  const response = await apiFetch('/api/auctions');
   if (!response.ok) {
     throw new Error('Failed to fetch auctions');
   }

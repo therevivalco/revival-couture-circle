@@ -20,12 +20,14 @@ import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import ProductCard from "@/components/ProductCard";
+import { apiFetch } from "@/lib/api";
 
 // Fetch products from API
 const fetchProducts = async () => {
-  const response = await fetch('/api/products');
+  const response = await apiFetch('/api/products');
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error('Failed to fetch products');
   }
   return response.json();
 };

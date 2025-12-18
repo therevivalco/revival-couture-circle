@@ -7,4 +7,9 @@ export const getApiUrl = (endpoint: string) => {
     return `${API_URL}/${cleanEndpoint}`;
 };
 
+// Helper function for fetch with API URL
+export const apiFetch = (endpoint: string, options?: RequestInit) => {
+    return fetch(getApiUrl(endpoint), options);
+};
+
 export default API_URL;
