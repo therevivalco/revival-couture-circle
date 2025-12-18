@@ -1,14 +1,15 @@
-web:
+services:
   - type: web
     name: revival-couture-backend
     env: node
+    rootDir: server
     buildCommand: npm install
     startCommand: node index.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3000
+        value: 10000
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY
