@@ -64,7 +64,10 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        const imageUrl = `/uploads/${req.file.filename}`;
+        // Return full URL so images work in production
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const imageUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
         res.json({ imageUrl });
     } catch (error) {
         res.status(500).json({ error: error.message });
