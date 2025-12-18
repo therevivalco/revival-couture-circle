@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -18,117 +18,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Search, Heart, Clock } from "lucide-react";
+import { Search } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import AuctionForm from "@/components/AuctionForm";
+import AuctionCard from "@/components/AuctionCard";
+import AuctionDetailModal from "@/components/AuctionDetailModal";
 
-// Mock Data for Auction Items
-const auctionItems = [
-  {
-    id: 1,
-    name: "Signed 'Summer Tour' Jacket",
-    celebrity: "Celebrity Name",
-    image: "/assets/jacket.jpg",
-    currentBid: 10899.0,
-    bids: 6,
-    timeLeft: "12h 45m 30s",
-    endsSoon: false,
-  },
-  {
-    id: 2,
-    name: "Vintage Leather Boots",
-    celebrity: "Designer Collection",
-    image: "/assets/boots.jpg",
-    currentBid: 7499.0,
-    bids: 12,
-    timeLeft: "2d 8h 15m",
-    endsSoon: false,
-  },
-  {
-    id: 3,
-    name: "Rare 'Moonlight' Vinyl",
-    celebrity: "Artist Name",
-    image: "/assets/vinyl.jpg",
-    currentBid: 13499.0,
-    bids: 2,
-    timeLeft: "0h 55m 10s",
-    endsSoon: true,
-  },
-  {
-    id: 4,
-    name: "Hand-painted Denim Jacket",
-    celebrity: "Local Artisan",
-    image: "/assets/denim-jacket.jpg.png",
-    currentBid: 11399.0,
-    bids: 25,
-    timeLeft: "5d 2h 30m",
-    endsSoon: false,
-  },
-];
-
-const AuctionItemCard = ({ item }) => (
-  <Card className="group overflow-hidden rounded-lg shadow-soft transition-all duration-300 hover:shadow-soft-lg hover:-translate-y-1">
-    <CardContent className="p-0">
-      <div className="relative">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-full h-80 object-cover"
-        />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30"
-        >
-          <Heart className="h-5 w-5" />
-        </Button>
-      </div>
-      <div className="p-5">
-        <h3 className="font-semibold text-lg truncate">{item.name}</h3>
-        <p className="text-sm text-muted-foreground mb-3">
-          {item.celebrity}
-        </p>
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <span className="font-bold text-xl text-olive">
-              ₹{item.currentBid.toFixed(2)}
-            </span>
-            <span className="text-sm text-muted-foreground ml-2">
-              &#x2022; {item.bids} bids
-            </span>
-          </div>
-          <div
-            className={`flex items-center text-sm font-medium ${item.endsSoon ? "text-rose" : "text-muted-foreground"
-              }`}
-          >
-            <Clock className="h-4 w-4 mr-1" />
-            {item.timeLeft}
-          </div>
-        </div>
-        <Button variant="outline" className="w-full">
-          View & Bid
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
-);
+// Fetch auctions from API
+const fetchAuctions = async () => {
+  const response = await fetch('/api/auctions');
+  if (!response.ok) {
+    throw new Error('Failed to fetch auctions');
+  }
+  return response.json();
+};
 
 const AuctionPage = () => {
-  const [step, setStep] = useState(1);
-  const progress = (step / 3) * 100;
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedAuction, setSelectedAuction] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("bids");
 
-  const handleProtectedAction = (action: () => void) => {
-    if (!user) {
-      toast.error("Please log in to participate in auctions");
-      navigate("/login");
-    } else {
-      action();
-    }
+  const { data: auctions = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['auctions'],
+    queryFn: fetchAuctions,
+    refetchInterval: 5000, // Refetch every 5 seconds to update bids
+  });
+
+  const handleViewAuction = (auction: any) => {
+    setSelectedAuction(auction);
+    setIsModalOpen(true);
+  };
+
+  const handleAuctionCreated = () => {
+    setActiveTab("bids");
+    refetch();
+    toast.success("Switch to 'Current Bids' tab to see your auction!");
+  };
+
+  const handleBidPlaced = () => {
+    refetch();
   };
 
   return (
@@ -145,7 +77,7 @@ const AuctionPage = () => {
           </p>
         </header>
 
-        <Tabs defaultValue="bids" className="container mx-auto px-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="container mx-auto px-6">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-neutral-200/60 p-1.5 rounded-full">
             <TabsTrigger
               value="bids"
@@ -174,7 +106,7 @@ const AuctionPage = () => {
               <div className="relative w-full md:max-w-xs">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
-                  placeholder="Search by item or celebrity..."
+                  placeholder="Search by item or brand..."
                   className="pl-10 rounded-full"
                 />
               </div>
@@ -184,9 +116,9 @@ const AuctionPage = () => {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="shoes">Shoes</SelectItem>
-                    <SelectItem value="jackets">Jackets</SelectItem>
-                    <SelectItem value="memorabilia">Memorabilia</SelectItem>
+                    <SelectItem value="for-her">For Her</SelectItem>
+                    <SelectItem value="for-him">For Him</SelectItem>
+                    <SelectItem value="kids">Kids</SelectItem>
                     <SelectItem value="accessories">Accessories</SelectItem>
                   </SelectContent>
                 </Select>
@@ -205,21 +137,38 @@ const AuctionPage = () => {
               </div>
             </div>
 
-            <h2 className="text-2xl font-serif font-semibold mb-6">
-              {auctionItems.length} Auctions Live Now
-            </h2>
+            {isLoading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading auctions...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-rose">Failed to load auctions. Please try again.</p>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-2xl font-serif font-semibold mb-6">
+                  {auctions.length} Auctions Live Now
+                </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {auctionItems.map((item) => (
-                <AuctionItemCard key={item.id} item={item} />
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg" className="rounded-full">
-                Load More
-              </Button>
-            </div>
+                {auctions.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {auctions.map((auction: any) => (
+                      <AuctionCard
+                        key={auction.id}
+                        auction={auction}
+                        onViewClick={handleViewAuction}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No active auctions at the moment.</p>
+                    <p className="text-sm text-muted-foreground mt-2">Be the first to list an item!</p>
+                  </div>
+                )}
+              </>
+            )}
           </TabsContent>
 
           {/* List an Item Tab */}
@@ -227,80 +176,28 @@ const AuctionPage = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-10">
                 <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-800">
-                  Donate a Treasure. Make an Impact.
+                  List Your Luxury Item for Auction
                 </h2>
                 <p className="text-lg text-muted-foreground mt-3 max-w-2xl mx-auto">
-                  List your authentic, pre-loved luxury items for auction. Our
-                  team vets every submission to ensure quality and authenticity.
+                  List your authentic, pre-loved luxury items for auction. Set your starting bid and watch the offers come in!
                 </p>
               </div>
 
-              <Card className="p-8 rounded-xl shadow-soft">
-                <div className="mb-6">
-                  <Progress value={progress} className="w-full h-2" />
-                  <p className="text-center text-sm text-muted-foreground mt-2">
-                    Step {step} of 3
-                  </p>
-                </div>
-
-                {step === 1 && (
-                  <div className="animate-fade-in space-y-6">
-                    <h3 className="text-2xl font-serif font-semibold">
-                      Step 1: Item Details
-                    </h3>
-                    {/* Form fields for step 1 */}
-                    <Button onClick={() => setStep(2)} className="w-full md:w-auto">
-                      Next: Auction Details
-                    </Button>
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="animate-fade-in space-y-6">
-                    <h3 className="text-2xl font-serif font-semibold">
-                      Step 2: Auction Details
-                    </h3>
-                    {/* Form fields for step 2 */}
-                    <div className="flex gap-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => setStep(1)}
-                        className="w-full md:w-auto"
-                      >
-                        Back
-                      </Button>
-                      <Button onClick={() => setStep(3)} className="w-full md:w-auto">
-                        Next: Donor Information
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {step === 3 && (
-                  <div className="animate-fade-in space-y-6">
-                    <h3 className="text-2xl font-serif font-semibold">
-                      Step 3: Donor Information
-                    </h3>
-                    {/* Form fields for step 3 */}
-                    <div className="flex gap-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => setStep(2)}
-                        className="w-full md:w-auto"
-                      >
-                        Back
-                      </Button>
-                      <Button className="w-full md:w-auto" disabled>
-                        Submit Item for Review
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </Card>
+              <div className="bg-card border border-border rounded-xl p-8 shadow-soft">
+                <AuctionForm onSuccess={handleAuctionCreated} />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Auction Detail Modal */}
+      <AuctionDetailModal
+        auction={selectedAuction}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onBidPlaced={handleBidPlaced}
+      />
 
       <Footer />
     </div>

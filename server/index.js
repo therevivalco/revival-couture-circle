@@ -3,7 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getAllProducts, createProduct } from './database.js';
+import { getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,6 +94,100 @@ app.post('/api/products', async (req, res) => {
 
         const newProduct = await createProduct(productData);
         res.status(201).json(newProduct);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Auction endpoints
+// Create auction
+app.post('/api/auctions', async (req, res) => {
+    try {
+        const { seller_id, image, name, category, brand, size, condition, start_time, duration, minimum_bid } = req.body;
+
+        // Validate required fields
+        if (!seller_id || !image || !name || !category || !brand || !size || !condition || !start_time || !duration || !minimum_bid) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const auctionData = {
+            seller_id,
+            image,
+            name,
+            category,
+            brand,
+            size,
+            condition,
+            start_time,
+            duration: parseInt(duration),
+            minimum_bid: parseFloat(minimum_bid),
+            current_bid: parseFloat(minimum_bid),
+            status: 'active'
+        };
+
+        const newAuction = await createAuction(auctionData);
+        res.status(201).json(newAuction);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get all active auctions
+app.get('/api/auctions', async (req, res) => {
+    try {
+        const auctions = await getAllActiveAuctions();
+        res.json(auctions);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get single auction
+app.get('/api/auctions/:id', async (req, res) => {
+    try {
+        const auction = await getAuctionById(req.params.id);
+        res.json(auction);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Place bid
+app.post('/api/auctions/:id/bid', async (req, res) => {
+    try {
+        const { bidder_id, bid_amount } = req.body;
+        const auctionId = req.params.id;
+
+        if (!bidder_id || !bid_amount) {
+            return res.status(400).json({ error: 'Bidder ID and bid amount are required' });
+        }
+
+        // Get current auction to validate bid
+        const auction = await getAuctionById(auctionId);
+
+        if (parseFloat(bid_amount) <= parseFloat(auction.current_bid)) {
+            return res.status(400).json({ error: 'Bid must be higher than current bid' });
+        }
+
+        const bidData = {
+            auction_id: parseInt(auctionId),
+            bidder_id,
+            bid_amount: parseFloat(bid_amount),
+            bid_time: new Date().toISOString()
+        };
+
+        const result = await placeBid(auctionId, bidData);
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get auction bids
+app.get('/api/auctions/:id/bids', async (req, res) => {
+    try {
+        const bids = await getAuctionBids(req.params.id);
+        res.json(bids);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
