@@ -16,6 +16,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { apiFetch } from "@/lib/api";
 
 interface Product {
     id: number;
@@ -32,7 +33,7 @@ interface Product {
 
 const fetchUserProducts = async (sellerId: string) => {
     console.log('Fetching products for seller:', sellerId);
-    const response = await fetch(`/api/products/user/${sellerId}`);
+    const response = await apiFetch(`/api/products/user/${sellerId}`);
     console.log('Response status:', response.status);
     if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -65,7 +66,7 @@ const MyProductsTab = () => {
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/products/${productToDelete.id}`, {
+            const response = await apiFetch(`/api/products/${productToDelete.id}`, {
                 method: "DELETE",
             });
 

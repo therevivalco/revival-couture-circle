@@ -13,6 +13,7 @@ import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 
 interface SellFormProps {
     onSuccess?: () => void;
@@ -128,7 +129,7 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
             const imageFormData = new FormData();
             imageFormData.append("image", imageFile);
 
-            const uploadResponse = await fetch("/api/upload", {
+            const uploadResponse = await apiFetch("/api/upload", {
                 method: "POST",
                 body: imageFormData,
             });
@@ -143,7 +144,7 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
             setIsSubmitting(true);
 
             // Create product
-            const productResponse = await fetch("/api/products", {
+            const productResponse = await apiFetch("/api/products", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

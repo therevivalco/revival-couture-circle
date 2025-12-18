@@ -12,6 +12,7 @@ import { Loader2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { calculateTimeRemaining, formatTimeRemaining, isAuctionEndingSoon } from "@/lib/auctionUtils";
+import { apiFetch } from "@/lib/api";
 
 interface Bid {
     id: number;
@@ -53,7 +54,7 @@ const AuctionDetailModal = ({ auction, isOpen, onClose, onBidPlaced }: AuctionDe
 
         setIsLoadingBids(true);
         try {
-            const response = await fetch(`/api/auctions/${auction.id}/bids`);
+            const response = await apiFetch(`/api/auctions/${auction.id}/bids`);
             if (response.ok) {
                 const data = await response.json();
                 setBids(data);
@@ -81,7 +82,7 @@ const AuctionDetailModal = ({ auction, isOpen, onClose, onBidPlaced }: AuctionDe
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`/api/auctions/${auction.id}/bid`, {
+            const response = await apiFetch(`/api/auctions/${auction.id}/bid`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

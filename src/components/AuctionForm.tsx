@@ -13,6 +13,7 @@ import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 
 interface AuctionFormProps {
     onSuccess?: () => void;
@@ -131,7 +132,7 @@ const AuctionForm = ({ onSuccess }: AuctionFormProps) => {
             const imageFormData = new FormData();
             imageFormData.append("image", imageFile);
 
-            const uploadResponse = await fetch("/api/upload", {
+            const uploadResponse = await apiFetch("/api/upload", {
                 method: "POST",
                 body: imageFormData,
             });
@@ -146,7 +147,7 @@ const AuctionForm = ({ onSuccess }: AuctionFormProps) => {
             setIsSubmitting(true);
 
             // Create auction
-            const auctionResponse = await fetch("/api/auctions", {
+            const auctionResponse = await apiFetch("/api/auctions", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

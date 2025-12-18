@@ -18,6 +18,7 @@ import {
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 
 interface Product {
     id: number;
@@ -144,7 +145,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                 const imageFormData = new FormData();
                 imageFormData.append("image", imageFile);
 
-                const uploadResponse = await fetch("/api/upload", {
+                const uploadResponse = await apiFetch("/api/upload", {
                     method: "POST",
                     body: imageFormData,
                 });
@@ -162,7 +163,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
             setIsSubmitting(true);
 
             // Update product
-            const response = await fetch(`/api/products/${product.id}`, {
+            const response = await apiFetch(`/api/products/${product.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
