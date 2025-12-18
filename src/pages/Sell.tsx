@@ -1,16 +1,24 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SellForm from "@/components/SellForm";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Upload, CheckCircle, DollarSign, Package } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const Sell = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -18,6 +26,10 @@ const Sell = () => {
       navigate("/login");
     }
   }, [user, loading, navigate]);
+
+  const handleOpenForm = () => {
+    setIsFormOpen(true);
+  };
 
   if (loading) return <div>Loading...</div>;
 
@@ -32,9 +44,16 @@ const Sell = () => {
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6">
               Give Your Clothes a Second Story
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
               Turn your wardrobe into opportunity. List your pre-loved luxury items and join our community of conscious sellers.
             </p>
+            <Button
+              size="lg"
+              className="text-base px-10 py-6 rounded-full"
+              onClick={handleOpenForm}
+            >
+              List Your Items
+            </Button>
           </div>
 
           {/* How It Works */}
@@ -112,19 +131,25 @@ const Sell = () => {
               </div>
             </div>
           </div>
-
-          {/* CTA */}
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-serif font-bold mb-6">Ready to Start Selling?</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Join our community of conscious sellers and turn your pre-loved fashion into earnings.
-            </p>
-            <Button size="lg" className="text-base px-10 py-6 rounded-full">
-              List Your Items
-            </Button>
-          </div>
         </div>
       </main>
+
+      {/* Sell Form Modal */}
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen} modal={true}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 flex flex-col overflow-hidden">
+          <div className="sticky top-0 bg-background z-10 p-6 border-b flex-shrink-0">
+            <DialogTitle className="text-2xl font-serif">List Your Item</DialogTitle>
+          </div>
+          <div
+            className="overflow-y-auto flex-1 p-6"
+            onWheel={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <SellForm onSuccess={() => setIsFormOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

@@ -23,3 +23,16 @@ export const getAllProducts = async (callback) => {
 
     callback(data);
 };
+
+export const createProduct = async (productData) => {
+    const { data, error } = await supabase
+        .from('products')
+        .insert([productData])
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data[0];
+};
