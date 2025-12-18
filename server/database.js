@@ -118,3 +118,59 @@ export const getAuctionBids = async (auctionId) => {
 
     return data;
 };
+
+// Product management functions
+export const getProductsBySeller = async (sellerId) => {
+    try {
+        console.log('Querying products for seller_id:', sellerId);
+
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .ilike('seller_id', sellerId);
+
+        console.log('Query result - data:', data, 'error:', error);
+
+        if (error) {
+            // If seller_id column doesn't exist, return empty array
+            if (error.message.includes('seller_id') || error.code === '42703') {
+                console.warn('seller_id column does not exist in products table. Please add it with: ALTER TABLE products ADD COLUMN seller_id TEXT;');
+                return [];
+            }
+            throw new Error(error.message);
+        }
+
+        return data || [];
+    } catch (err) {
+        console.error('Error fetching products by seller:', err);
+        return [];
+    }
+};
+
+export const updateProduct = async (productId, productData) => {
+    const { data, error } = await supabase
+        .from('products')
+        .update(productData)
+        .eq('id', productId)
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data[0];
+};
+
+export const deleteProduct = async (productId) => {
+    const { data, error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId)
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data[0];
+};

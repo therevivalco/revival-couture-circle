@@ -3,7 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids } from './database.js';
+import { getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getProductsBySeller, updateProduct, deleteProduct } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,7 +74,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 // Create product endpoint
 app.post('/api/products', async (req, res) => {
     try {
-        const { name, brand, material, price, originalPrice, condition, category, image } = req.body;
+        const { name, brand, material, price, originalPrice, condition, category, image, seller_id } = req.body;
 
         // Validate required fields
         if (!name || !brand || !material || !price || !originalPrice || !condition || !category || !image) {
@@ -89,7 +89,8 @@ app.post('/api/products', async (req, res) => {
             originalPrice: parseFloat(originalPrice),
             condition,
             category,
-            image
+            image,
+            seller_id: seller_id || 'anonymous'
         };
 
         const newProduct = await createProduct(productData);
@@ -188,6 +189,49 @@ app.get('/api/auctions/:id/bids', async (req, res) => {
     try {
         const bids = await getAuctionBids(req.params.id);
         res.json(bids);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Product management endpoints
+// Get products by seller
+app.get('/api/products/user/:sellerId', async (req, res) => {
+    try {
+        const products = await getProductsBySeller(req.params.sellerId);
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update product
+app.put('/api/products/:id', async (req, res) => {
+    try {
+        const { name, brand, material, price, originalPrice, condition, category, image } = req.body;
+
+        const productData = {};
+        if (name) productData.name = name;
+        if (brand) productData.brand = brand;
+        if (material) productData.material = material;
+        if (price) productData.price = parseFloat(price);
+        if (originalPrice) productData.originalPrice = parseFloat(originalPrice);
+        if (condition) productData.condition = condition;
+        if (category) productData.category = category;
+        if (image) productData.image = image;
+
+        const updatedProduct = await updateProduct(req.params.id, productData);
+        res.json(updatedProduct);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Delete product
+app.delete('/api/products/:id', async (req, res) => {
+    try {
+        const deletedProduct = await deleteProduct(req.params.id);
+        res.json({ message: 'Product deleted successfully', product: deletedProduct });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

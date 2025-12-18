@@ -12,12 +12,14 @@ import {
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 interface SellFormProps {
     onSuccess?: () => void;
 }
 
 const SellForm = ({ onSuccess }: SellFormProps) => {
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         name: "",
         brand: "",
@@ -149,6 +151,7 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
                 body: JSON.stringify({
                     ...formData,
                     image: imageUrl,
+                    seller_id: user?.email || "anonymous",
                 }),
             });
 

@@ -1,11 +1,17 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SellForm from "@/components/SellForm";
+import MyProductsTab from "@/components/MyProductsTab";
 import { Button } from "@/components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Upload, CheckCircle, DollarSign, Package } from "lucide-react";
@@ -19,6 +25,7 @@ const Sell = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("list");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -56,81 +63,112 @@ const Sell = () => {
             </Button>
           </div>
 
-          {/* How It Works */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="text-center space-y-4 p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-colors">
-              <div className="inline-flex p-4 rounded-xl bg-olive/20">
-                <Upload className="h-8 w-8 text-olive" />
-              </div>
-              <h3 className="text-xl font-serif font-semibold">1. Upload</h3>
-              <p className="text-muted-foreground">
-                Add photos and details of your items. Our team will review and approve within 48 hours.
-              </p>
-            </div>
+          {/* Tabs for List/My Products */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-16">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-neutral-200/60 p-1.5 rounded-full mb-10">
+              <TabsTrigger
+                value="list"
+                className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-md"
+              >
+                How It Works
+              </TabsTrigger>
+              <TabsTrigger
+                value="my-products"
+                className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-md"
+              >
+                My Products
+              </TabsTrigger>
+            </TabsList>
 
-            <div className="text-center space-y-4 p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-colors">
-              <div className="inline-flex p-4 rounded-xl bg-sage/20">
-                <CheckCircle className="h-8 w-8 text-sage" />
+            {/* How It Works Tab */}
+            <TabsContent value="list" className="animate-fade-in">
+              {/* How It Works */}
+              <div className="mb-16">
+                <h2 className="text-3xl font-serif font-bold text-center mb-12">
+                  How It Works
+                </h2>
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="text-center">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Upload className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">1. Upload</h3>
+                    <p className="text-muted-foreground">
+                      Add photos and details of your items. Our team will review and approve within 48 hours.
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">2. Get Verified</h3>
+                    <p className="text-muted-foreground">
+                      We authenticate and quality check every piece to ensure the best for our community.
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <DollarSign className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">3. Earn</h3>
+                    <p className="text-muted-foreground">
+                      Once sold, receive payment directly. We handle shipping and customer service.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-serif font-semibold">2. Get Verified</h3>
-              <p className="text-muted-foreground">
-                We authenticate and quality check every piece to ensure the best for our community.
-              </p>
-            </div>
 
-            <div className="text-center space-y-4 p-8 rounded-2xl bg-card border border-border hover:border-primary/20 transition-colors">
-              <div className="inline-flex p-4 rounded-xl bg-rose/20">
-                <DollarSign className="h-8 w-8 text-rose" />
+              {/* Why Sell With Us */}
+              <div>
+                <h2 className="text-3xl font-serif font-bold text-center mb-12">
+                  Why Sell With Us?
+                </h2>
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  <div className="flex gap-4">
+                    <Package className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold mb-2">Hassle-Free Shipping</h4>
+                      <p className="text-muted-foreground">
+                        We provide prepaid shipping labels. Just pack and ship!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold mb-2">Trusted Community</h4>
+                      <p className="text-muted-foreground">
+                        Join thousands of sellers in our sustainable fashion movement.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <DollarSign className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold mb-2">Fair Pricing</h4>
+                      <p className="text-muted-foreground">
+                        Set your own prices and earn up to 80% of the sale price.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <Upload className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="font-semibold mb-2">Simple Process</h4>
+                      <p className="text-muted-foreground">
+                        Easy upload, hassle-free selling. We handle the rest.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-serif font-semibold">3. Earn</h3>
-              <p className="text-muted-foreground">
-                Receive payment when your item sells. Fast, secure, and transparent process.
-              </p>
-            </div>
-          </div>
+            </TabsContent>
 
-          {/* Benefits */}
-          <div className="bg-muted/30 rounded-2xl p-12 mb-16">
-            <h2 className="text-3xl font-serif font-bold mb-8 text-center">Why Sell With Us?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex gap-4">
-                <Package className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold mb-2">Free Shipping Kit</h4>
-                  <p className="text-muted-foreground">
-                    We provide everything you need to safely send your items to us.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold mb-2">Expert Authentication</h4>
-                  <p className="text-muted-foreground">
-                    Professional verification ensures trust and quality for buyers.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <DollarSign className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold mb-2">Competitive Pricing</h4>
-                  <p className="text-muted-foreground">
-                    Earn up to 70% of the selling price with our transparent commission structure.
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <Upload className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold mb-2">Simple Process</h4>
-                  <p className="text-muted-foreground">
-                    Easy upload, hassle-free selling. We handle the rest.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            {/* My Products Tab */}
+            <TabsContent value="my-products" className="animate-fade-in">
+              <MyProductsTab />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
