@@ -56,9 +56,13 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
+        console.log('Uploading file:', req.file.originalname, 'Size:', req.file.size);
+
         // Generate unique filename
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const filename = uniqueSuffix + path.extname(req.file.originalname);
+
+        console.log('Generated filename:', filename);
 
         // Upload to Supabase Storage
         const { data, error } = await supabase.storage
@@ -70,17 +74,22 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
             });
 
         if (error) {
-            console.error('Supabase upload error:', error);
-            throw new Error('Failed to upload image to storage');
+            console.error('Supabase upload error:', JSON.stringify(error, null, 2));
+            throw new Error(`Failed to upload image to storage: ${error.message}`);
         }
+
+        console.log('Upload successful:', data);
 
         // Get public URL
         const { data: { publicUrl } } = supabase.storage
             .from('Images')
             .getPublicUrl(filename);
 
+        console.log('Public URL:', publicUrl);
+
         res.json({ imageUrl: publicUrl });
     } catch (error) {
+        console.error('Upload endpoint error:', error);
         res.status(500).json({ error: error.message });
     }
 });
