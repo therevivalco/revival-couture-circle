@@ -15,6 +15,7 @@ interface CartItem extends Product {
 }
 
 interface CartContextType {
+  cart: CartItem[];
   cartItems: CartItem[];
   isCartOpen: boolean;
   addToCart: (product: Product, size: string) => void;
@@ -68,7 +69,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, isCartOpen, addToCart, removeFromCart, clearCart, toggleCart }}>
+    <CartContext.Provider value={{ cart: cartItems, cartItems, isCartOpen, addToCart, removeFromCart, clearCart, toggleCart }}>
       {children}
     </CartContext.Provider>
   );

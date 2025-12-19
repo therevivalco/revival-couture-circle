@@ -4,9 +4,10 @@ import { Button } from '../components/ui/button';
 import { X, ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CartPage = () => {
+  const navigate = useNavigate();
   const { cartItems, removeFromCart, clearCart } = useCart();
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -67,7 +68,7 @@ const CartPage = () => {
                 <p>Total</p>
                 <p>₹{total.toLocaleString('en-IN')}</p>
               </div>
-              <Button className="w-full" size="lg">Proceed to Checkout</Button>
+              <Button className="w-full" size="lg" onClick={() => navigate('/checkout')}>Proceed to Checkout</Button>
               <Link to="/shop" className="block mt-2">
                 <Button variant="outline" className="w-full">Continue Shopping</Button>
               </Link>

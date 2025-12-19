@@ -41,7 +41,11 @@ export const createProduct = async (productData) => {
 export const createAuction = async (auctionData) => {
     const { data, error } = await supabase
         .from('auction_items')
-        .insert([auctionData])
+        .insert([{
+            ...auctionData,
+            current_bid: auctionData.minimum_bid,
+            status: 'active'
+        }])
         .select();
 
     if (error) {
@@ -65,11 +69,11 @@ export const getAllActiveAuctions = async () => {
     return data;
 };
 
-export const getAuctionById = async (id) => {
+export const getAuctionById = async (auctionId) => {
     const { data, error } = await supabase
         .from('auction_items')
         .select('*')
-        .eq('id', id)
+        .eq('id', auctionId)
         .single();
 
     if (error) {
@@ -80,29 +84,36 @@ export const getAuctionById = async (id) => {
 };
 
 export const placeBid = async (auctionId, bidData) => {
-    // Start a transaction-like operation
-    // First, insert the bid
-    const { data: bidResult, error: bidError } = await supabase
+    // First, get current auction
+    const auction = await getAuctionById(auctionId);
+
+    if (bidData.bid_amount <= auction.current_bid) {
+        throw new Error('Bid must be higher than current bid');
+    }
+
+    // Insert bid
+    const { error: bidError } = await supabase
         .from('bids')
-        .insert([bidData])
-        .select();
+        .insert([{
+            auction_id: auctionId,
+            ...bidData
+        }]);
 
     if (bidError) {
         throw new Error(bidError.message);
     }
 
-    // Then update the auction's current_bid
-    const { data: auctionResult, error: auctionError } = await supabase
+    // Update auction current_bid
+    const { error: updateError } = await supabase
         .from('auction_items')
         .update({ current_bid: bidData.bid_amount })
-        .eq('id', auctionId)
-        .select();
+        .eq('id', auctionId);
 
-    if (auctionError) {
-        throw new Error(auctionError.message);
+    if (updateError) {
+        throw new Error(updateError.message);
     }
 
-    return { bid: bidResult[0], auction: auctionResult[0] };
+    return { success: true };
 };
 
 export const getAuctionBids = async (auctionId) => {
@@ -173,4 +184,96 @@ export const deleteProduct = async (productId) => {
     }
 
     return data[0];
+};
+
+// Order management functions
+export const createOrder = async (orderData) => {
+    const { orderItems, ...orderDetails } = orderData;
+
+    // Generate unique order number
+    const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+
+    // Create order
+    const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+            ...orderDetails,
+            order_number: orderNumber,
+        }])
+        .select()
+        .single();
+
+    if (orderError) {
+        throw new Error(orderError.message);
+    }
+
+    // Create order items
+    const itemsToInsert = orderItems.map(item => ({
+        order_id: order.id,
+        product_id: item.id,
+        product_name: item.name,
+        product_image: item.image,
+        product_brand: item.brand,
+        quantity: item.quantity,
+        price: item.price,
+    }));
+
+    const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(itemsToInsert);
+
+    if (itemsError) {
+        throw new Error(itemsError.message);
+    }
+
+    return order;
+};
+
+export const getOrdersByUser = async (userEmail) => {
+    const { data, error } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            order_items (
+                id,
+                product_name,
+                product_image,
+                product_brand,
+                quantity,
+                price
+            )
+        `)
+        .eq('user_email', userEmail)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+};
+
+export const getOrderById = async (orderId) => {
+    const { data, error } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            order_items (
+                id,
+                product_id,
+                product_name,
+                product_image,
+                product_brand,
+                quantity,
+                price
+            )
+        `)
+        .eq('id', orderId)
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
 };

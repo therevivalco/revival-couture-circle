@@ -3,7 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { supabase, getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getProductsBySeller, updateProduct, deleteProduct } from './database.js';
+import { supabase, getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getProductsBySeller, updateProduct, deleteProduct, createOrder, getOrdersByUser, getOrderById } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -255,6 +255,37 @@ app.delete('/api/products/:id', async (req, res) => {
     try {
         const deletedProduct = await deleteProduct(req.params.id);
         res.json({ message: 'Product deleted successfully', product: deletedProduct });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Order endpoints
+app.post('/api/orders', async (req, res) => {
+    try {
+        console.log('Creating order with data:', JSON.stringify(req.body, null, 2));
+        const order = await createOrder(req.body);
+        console.log('Order created successfully:', order);
+        res.json(order);
+    } catch (error) {
+        console.error('Order creation error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/orders/user/:email', async (req, res) => {
+    try {
+        const orders = await getOrdersByUser(req.params.email);
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/orders/:id', async (req, res) => {
+    try {
+        const order = await getOrderById(req.params.id);
+        res.json(order);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
