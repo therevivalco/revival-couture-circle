@@ -31,7 +31,7 @@ const About = () => {
             <div className="prose prose-lg max-w-none">
               <h2 className="text-3xl font-serif font-bold mb-6">What We Believe</h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                The Revival Co. was founded by four college students with one shared belief — fashion shouldn't cost the planet. What started as a small idea in a dorm room has grown into a platform dedicated to giving pre-loved clothing a new life.
+                The Revival Co. was founded by four college students with one shared belief — fashion shouldn't cost the planet. What started as a small idea in a classroom has grown into a platform dedicated to giving pre-loved clothing a new life.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-6">
                 The Revival Co. was born from a simple belief: fashion can be both luxurious and responsible. We saw an industry creating waste, and wardrobes full of unworn clothes. We imagined a better way — one where every garment has value, every choice has meaning, and style doesn't cost the earth.

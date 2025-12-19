@@ -3,9 +3,25 @@ import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { useWishlist } from "../context/WishlistContext";
 import Navigation from "../components/Navigation";
+import { useCart } from "../context/CartContext";
+import ProductDetailModal from "../components/ProductDetailModal";
+import { useState } from "react";
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleMoveToCart = (item) => {
+    addToCart(item);
+    removeFromWishlist(item.id);
+  };
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,7 +56,7 @@ const Wishlist = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {wishlistItems.map((item) => (
                 <div key={item.id} className="group relative">
-                  <div className="aspect-[3/4] overflow-hidden rounded-lg mb-4 bg-muted">
+                  <div className="aspect-[3/4] overflow-hidden rounded-lg mb-4 bg-muted cursor-pointer" onClick={() => handleProductClick(item)}>
                     <img
                       src={item.image}
                       alt={item.name}
@@ -60,6 +76,9 @@ const Wishlist = () => {
                     <p className="text-sm text-muted-foreground">{item.material}</p>
                     <p className="font-semibold text-foreground">₹{item.price.toLocaleString('en-IN')}</p>
                   </div>
+                  <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => handleMoveToCart(item)}>
+                    Move to Cart
+                  </Button>
                 </div>
               ))}
             </div>
@@ -75,6 +94,11 @@ const Wishlist = () => {
           </>
         )}
       </div>
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
