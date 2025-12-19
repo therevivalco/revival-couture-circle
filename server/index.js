@@ -3,7 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getProductsBySeller, updateProduct, deleteProduct } from './database.js';
+import { supabase, getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getProductsBySeller, updateProduct, deleteProduct } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,16 +17,8 @@ app.use(express.json());
 // Serve static files from public/uploads
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../public/uploads'));
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// Configure multer for memory storage (we'll upload to Supabase)
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -57,18 +49,37 @@ app.get('/api/products', (req, res) => {
     }
 });
 
-// Upload image endpoint
-app.post('/api/upload', upload.single('image'), (req, res) => {
+// Upload image endpoint - now uses Supabase Storage
+app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        // Return full URL so images work in production
-        const protocol = req.protocol;
-        const host = req.get('host');
-        const imageUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
-        res.json({ imageUrl });
+        // Generate unique filename
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const filename = uniqueSuffix + path.extname(req.file.originalname);
+
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+            .from('Images')
+            .upload(filename, req.file.buffer, {
+                contentType: req.file.mimetype,
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (error) {
+            console.error('Supabase upload error:', error);
+            throw new Error('Failed to upload image to storage');
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+            .from('Images')
+            .getPublicUrl(filename);
+
+        res.json({ imageUrl: publicUrl });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
