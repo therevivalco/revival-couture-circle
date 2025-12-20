@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -17,9 +17,21 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, CreditCard, Smartphone, Building2, Wallet } from "lucide-react";
+import { Loader2, CreditCard, Smartphone, Building2, Wallet, MapPin, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
+
+interface SavedAddress {
+    id: number;
+    name: string;
+    phone: string;
+    address_line1: string;
+    address_line2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    is_default: boolean;
+}
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -27,6 +39,9 @@ const Checkout = () => {
     const { user } = useAuth();
     const [currentStep, setCurrentStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+    const [useNewAddress, setUseNewAddress] = useState(false);
 
     const [shippingDetails, setShippingDetails] = useState({
         name: "",
@@ -41,6 +56,69 @@ const Checkout = () => {
 
     const [paymentMethod, setPaymentMethod] = useState("cod");
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+    // Fetch saved addresses on mount
+    useEffect(() => {
+        const fetchAddresses = async () => {
+            if (!user?.email) return;
+
+            try {
+                const response = await apiFetch(`/api/addresses/user/${user.email}`);
+                if (response.ok) {
+                    const addresses = await response.json();
+                    setSavedAddresses(addresses);
+
+                    // Auto-select default address if available
+                    const defaultAddress = addresses.find((addr: SavedAddress) => addr.is_default);
+                    if (defaultAddress && !useNewAddress) {
+                        setSelectedAddressId(defaultAddress.id);
+                        loadAddressToForm(defaultAddress);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch addresses:", error);
+            }
+        };
+
+        fetchAddresses();
+    }, [user]);
+
+    const loadAddressToForm = (address: SavedAddress) => {
+        setShippingDetails({
+            name: address.name,
+            email: user?.email || "",
+            phone: address.phone,
+            addressLine1: address.address_line1,
+            addressLine2: address.address_line2 || "",
+            city: address.city,
+            state: address.state,
+            pincode: address.pincode,
+        });
+    };
+
+    const handleAddressSelect = (addressId: number) => {
+        setSelectedAddressId(addressId);
+        setUseNewAddress(false);
+        const address = savedAddresses.find(addr => addr.id === addressId);
+        if (address) {
+            loadAddressToForm(address);
+        }
+    };
+
+    const handleUseNewAddress = () => {
+        setUseNewAddress(true);
+        setSelectedAddressId(null);
+        setShippingDetails({
+            name: "",
+            email: user?.email || "",
+            phone: "",
+            addressLine1: "",
+            addressLine2: "",
+            city: "",
+            state: "",
+            pincode: "",
+        });
+    };
 
     const indianStates = [
         "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -219,87 +297,165 @@ const Checkout = () => {
                                 <Card>
                                     <CardContent className="p-6">
                                         <h2 className="text-2xl font-serif font-semibold mb-6">Shipping Address</h2>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="md:col-span-2">
-                                                <Label htmlFor="name">Full Name *</Label>
-                                                <Input
-                                                    id="name"
-                                                    value={shippingDetails.name}
-                                                    onChange={(e) => handleInputChange("name", e.target.value)}
-                                                    placeholder="John Doe"
-                                                />
+
+                                        {/* Saved Addresses */}
+                                        {savedAddresses.length > 0 && !useNewAddress && (
+                                            <div className="mb-6">
+                                                <h3 className="font-medium mb-3">Select a saved address</h3>
+                                                <div className="space-y-3 mb-4">
+                                                    {savedAddresses.map((address) => (
+                                                        <Card
+                                                            key={address.id}
+                                                            className={`cursor-pointer transition-all ${selectedAddressId === address.id
+                                                                    ? "border-olive border-2 bg-olive/5"
+                                                                    : "hover:border-olive/50"
+                                                                }`}
+                                                            onClick={() => handleAddressSelect(address.id)}
+                                                        >
+                                                            <CardContent className="p-4">
+                                                                <div className="flex items-start gap-3">
+                                                                    <div className="flex-shrink-0 mt-1">
+                                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedAddressId === address.id
+                                                                                ? "border-olive bg-olive"
+                                                                                : "border-gray-300"
+                                                                            }`}>
+                                                                            {selectedAddressId === address.id && (
+                                                                                <div className="w-2 h-2 bg-white rounded-full" />
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <div className="flex items-center gap-2 mb-1">
+                                                                            <p className="font-semibold">{address.name}</p>
+                                                                            {address.is_default && (
+                                                                                <span className="text-xs bg-olive/20 text-olive px-2 py-0.5 rounded">
+                                                                                    Default
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        <p className="text-sm text-muted-foreground">{address.phone}</p>
+                                                                        <p className="text-sm mt-1">{address.address_line1}</p>
+                                                                        {address.address_line2 && (
+                                                                            <p className="text-sm">{address.address_line2}</p>
+                                                                        )}
+                                                                        <p className="text-sm">
+                                                                            {address.city}, {address.state} - {address.pincode}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </CardContent>
+                                                        </Card>
+                                                    ))}
+                                                </div>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={handleUseNewAddress}
+                                                    className="w-full"
+                                                >
+                                                    <Plus className="h-4 w-4 mr-2" />
+                                                    Use a different address
+                                                </Button>
                                             </div>
-                                            <div>
-                                                <Label htmlFor="email">Email *</Label>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    value={shippingDetails.email}
-                                                    onChange={(e) => handleInputChange("email", e.target.value)}
-                                                    placeholder="john@example.com"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="phone">Phone Number *</Label>
-                                                <Input
-                                                    id="phone"
-                                                    value={shippingDetails.phone}
-                                                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                                                    placeholder="9876543210"
-                                                    maxLength={10}
-                                                />
-                                            </div>
-                                            <div className="md:col-span-2">
-                                                <Label htmlFor="addressLine1">Address Line 1 *</Label>
-                                                <Input
-                                                    id="addressLine1"
-                                                    value={shippingDetails.addressLine1}
-                                                    onChange={(e) => handleInputChange("addressLine1", e.target.value)}
-                                                    placeholder="House No., Street Name"
-                                                />
-                                            </div>
-                                            <div className="md:col-span-2">
-                                                <Label htmlFor="addressLine2">Address Line 2</Label>
-                                                <Input
-                                                    id="addressLine2"
-                                                    value={shippingDetails.addressLine2}
-                                                    onChange={(e) => handleInputChange("addressLine2", e.target.value)}
-                                                    placeholder="Landmark (Optional)"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="city">City *</Label>
-                                                <Input
-                                                    id="city"
-                                                    value={shippingDetails.city}
-                                                    onChange={(e) => handleInputChange("city", e.target.value)}
-                                                    placeholder="Mumbai"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="state">State *</Label>
-                                                <Select value={shippingDetails.state} onValueChange={(value) => handleInputChange("state", value)}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select state" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {indianStates.map((state) => (
-                                                            <SelectItem key={state} value={state}>{state}</SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="pincode">PIN Code *</Label>
-                                                <Input
-                                                    id="pincode"
-                                                    value={shippingDetails.pincode}
-                                                    onChange={(e) => handleInputChange("pincode", e.target.value)}
-                                                    placeholder="400001"
-                                                    maxLength={6}
-                                                />
-                                            </div>
-                                        </div>
+                                        )}
+
+                                        {/* New Address Form */}
+                                        {(useNewAddress || savedAddresses.length === 0) && (
+                                            <>
+                                                {savedAddresses.length > 0 && (
+                                                    <div className="mb-4">
+                                                        <Button
+                                                            variant="ghost"
+                                                            onClick={() => setUseNewAddress(false)}
+                                                            size="sm"
+                                                        >
+                                                            ← Back to saved addresses
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="md:col-span-2">
+                                                        <Label htmlFor="name">Full Name *</Label>
+                                                        <Input
+                                                            id="name"
+                                                            value={shippingDetails.name}
+                                                            onChange={(e) => handleInputChange("name", e.target.value)}
+                                                            placeholder="John Doe"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="email">Email *</Label>
+                                                        <Input
+                                                            id="email"
+                                                            type="email"
+                                                            value={shippingDetails.email}
+                                                            onChange={(e) => handleInputChange("email", e.target.value)}
+                                                            placeholder="john@example.com"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="phone">Phone Number *</Label>
+                                                        <Input
+                                                            id="phone"
+                                                            value={shippingDetails.phone}
+                                                            onChange={(e) => handleInputChange("phone", e.target.value)}
+                                                            placeholder="9876543210"
+                                                            maxLength={10}
+                                                        />
+                                                    </div>
+                                                    <div className="md:col-span-2">
+                                                        <Label htmlFor="addressLine1">Address Line 1 *</Label>
+                                                        <Input
+                                                            id="addressLine1"
+                                                            value={shippingDetails.addressLine1}
+                                                            onChange={(e) => handleInputChange("addressLine1", e.target.value)}
+                                                            placeholder="House No., Street Name"
+                                                        />
+                                                    </div>
+                                                    <div className="md:col-span-2">
+                                                        <Label htmlFor="addressLine2">Address Line 2</Label>
+                                                        <Input
+                                                            id="addressLine2"
+                                                            value={shippingDetails.addressLine2}
+                                                            onChange={(e) => handleInputChange("addressLine2", e.target.value)}
+                                                            placeholder="Landmark (Optional)"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="city">City *</Label>
+                                                        <Input
+                                                            id="city"
+                                                            value={shippingDetails.city}
+                                                            onChange={(e) => handleInputChange("city", e.target.value)}
+                                                            placeholder="Mumbai"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="state">State *</Label>
+                                                        <Select value={shippingDetails.state} onValueChange={(value) => handleInputChange("state", value)}>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select state" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {indianStates.map((state) => (
+                                                                    <SelectItem key={state} value={state}>{state}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="pincode">PIN Code *</Label>
+                                                        <Input
+                                                            id="pincode"
+                                                            value={shippingDetails.pincode}
+                                                            onChange={(e) => handleInputChange("pincode", e.target.value)}
+                                                            placeholder="400001"
+                                                            maxLength={6}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+
                                         <Button onClick={handleNext} className="w-full mt-6">
                                             Continue to Payment
                                         </Button>

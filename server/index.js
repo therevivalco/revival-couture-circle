@@ -3,7 +3,8 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { supabase, getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getProductsBySeller, updateProduct, deleteProduct, createOrder, getOrdersByUser, getOrderById } from './database.js';
+import { supabase, getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getAuctionsByUser, getBidsByUser, getProductsBySeller, updateProduct, deleteProduct, createOrder, getOrdersByUser, getOrderById, getAddressesByUser, createAddress, updateAddress, deleteAddress, setDefaultAddress } from './database.js';
+import { createRentalItem, getAllRentalItems, getRentalItemById, getRentalsByOwner, checkRentalAvailability, createRentalBooking, getBookingsByRenter, getBookingsForRentalItem, updateBookingStatus, updateRentalItem, deleteRentalItem } from './rental-database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -217,6 +218,26 @@ app.get('/api/auctions/:id/bids', async (req, res) => {
     }
 });
 
+// Get auctions by user
+app.get('/api/auctions/user/:email', async (req, res) => {
+    try {
+        const auctions = await getAuctionsByUser(req.params.email);
+        res.json(auctions);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get bids by user
+app.get('/api/auctions/bids/user/:email', async (req, res) => {
+    try {
+        const bids = await getBidsByUser(req.params.email);
+        res.json(bids);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Product management endpoints
 // Get products by seller
 app.get('/api/products/user/:sellerId', async (req, res) => {
@@ -286,6 +307,198 @@ app.get('/api/orders/:id', async (req, res) => {
     try {
         const order = await getOrderById(req.params.id);
         res.json(order);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Address endpoints
+app.get('/api/addresses/user/:email', async (req, res) => {
+    try {
+        const addresses = await getAddressesByUser(req.params.email);
+        res.json(addresses);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/addresses', async (req, res) => {
+    try {
+        const address = await createAddress(req.body);
+        res.json(address);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/addresses/:id', async (req, res) => {
+    try {
+        const address = await updateAddress(req.params.id, req.body);
+        res.json(address);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/addresses/:id', async (req, res) => {
+    try {
+        const address = await deleteAddress(req.params.id);
+        res.json({ message: 'Address deleted successfully', address });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/addresses/:id/default', async (req, res) => {
+    try {
+        const { user_email } = req.body;
+        const address = await setDefaultAddress(req.params.id, user_email);
+        res.json(address);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Rental endpoints
+// Create rental listing
+app.post('/api/rentals', upload.single('image'), async (req, res) => {
+    try {
+        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+        const rentalData = {
+            ...req.body,
+            image: imageUrl,
+            rental_price_per_day: parseFloat(req.body.rental_price_per_day),
+            minimum_rental_days: parseInt(req.body.minimum_rental_days),
+            maximum_rental_days: req.body.maximum_rental_days ? parseInt(req.body.maximum_rental_days) : null,
+            security_deposit: parseFloat(req.body.security_deposit),
+            cleaning_fee_included: req.body.cleaning_fee_included === 'true',
+        };
+
+        const rental = await createRentalItem(rentalData);
+        res.json(rental);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get all available rentals
+app.get('/api/rentals', async (req, res) => {
+    try {
+        const rentals = await getAllRentalItems();
+        res.json(rentals);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get rental by ID
+app.get('/api/rentals/:id', async (req, res) => {
+    try {
+        const rental = await getRentalItemById(req.params.id);
+        res.json(rental);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get rentals by owner
+app.get('/api/rentals/owner/:email', async (req, res) => {
+    try {
+        const rentals = await getRentalsByOwner(req.params.email);
+        res.json(rentals);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Check availability
+app.post('/api/rentals/:id/check-availability', async (req, res) => {
+    try {
+        const { start_date, end_date } = req.body;
+        const availability = await checkRentalAvailability(req.params.id, start_date, end_date);
+        res.json(availability);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Create booking
+app.post('/api/rentals/:id/book', async (req, res) => {
+    try {
+        const booking = await createRentalBooking(req.body);
+        res.json(booking);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get bookings by renter
+app.get('/api/rentals/bookings/user/:email', async (req, res) => {
+    try {
+        const bookings = await getBookingsByRenter(req.params.email);
+        res.json(bookings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get bookings for a rental item
+app.get('/api/rentals/:id/bookings', async (req, res) => {
+    try {
+        const bookings = await getBookingsForRentalItem(req.params.id);
+        res.json(bookings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update booking status
+app.put('/api/rentals/bookings/:id/status', async (req, res) => {
+    try {
+        const { status, ...updates } = req.body;
+        const booking = await updateBookingStatus(req.params.id, status, updates);
+        res.json(booking);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update rental item
+app.put('/api/rentals/:id', upload.single('image'), async (req, res) => {
+    try {
+        const updateData = { ...req.body };
+
+        // Only update image if a new one was uploaded
+        if (req.file) {
+            updateData.image = `/uploads/${req.file.filename}`;
+        }
+
+        // Parse numerical fields
+        if (updateData.rental_price_per_day) {
+            updateData.rental_price_per_day = parseFloat(updateData.rental_price_per_day);
+        }
+        if (updateData.minimum_rental_days) {
+            updateData.minimum_rental_days = parseInt(updateData.minimum_rental_days);
+        }
+        if (updateData.maximum_rental_days) {
+            updateData.maximum_rental_days = updateData.maximum_rental_days ? parseInt(updateData.maximum_rental_days) : null;
+        }
+        if (updateData.security_deposit) {
+            updateData.security_deposit = parseFloat(updateData.security_deposit);
+        }
+
+        const rental = await updateRentalItem(req.params.id, updateData);
+        res.json(rental);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Delete rental item
+app.delete('/api/rentals/:id', async (req, res) => {
+    try {
+        const rental = await deleteRentalItem(req.params.id);
+        res.json({ message: 'Rental deleted successfully', rental });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

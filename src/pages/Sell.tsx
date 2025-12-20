@@ -25,7 +25,11 @@ const Sell = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("list");
+
+  // Check URL params to set initial tab
+  const searchParams = new URLSearchParams(window.location.search);
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam === 'my-products' ? 'my-products' : 'list');
 
   useEffect(() => {
     if (!loading && !user) {

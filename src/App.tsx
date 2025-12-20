@@ -26,6 +26,10 @@ import Account from "./pages/Account";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Orders from "./pages/Orders";
+import MyAuctions from "./pages/MyAuctions";
+import Coupons from "./pages/Coupons";
+import Addresses from "./pages/Addresses";
+import Rent from "./pages/Rent";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +63,10 @@ const App = () => (
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/order-success/:orderId" element={<OrderSuccess />} />
                   <Route path="/orders" element={<Orders />} />
+                  <Route path="/my-auctions" element={<MyAuctions />} />
+                  <Route path="/coupons" element={<Coupons />} />
+                  <Route path="/addresses" element={<Addresses />} />
+                  <Route path="/rent" element={<Rent />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

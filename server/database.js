@@ -130,6 +130,84 @@ export const getAuctionBids = async (auctionId) => {
     return data;
 };
 
+export const getAuctionsByUser = async (userEmail) => {
+    const { data, error } = await supabase
+        .from('auction_items')
+        .select(`
+            *,
+            bids (count)
+        `)
+        .eq('seller_id', userEmail)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    // Transform data to include bid count
+    const transformedData = data.map(auction => ({
+        ...auction,
+        bid_count: auction.bids?.[0]?.count || 0
+    }));
+
+    return transformedData;
+};
+
+export const getBidsByUser = async (userEmail) => {
+    const { data, error } = await supabase
+        .from('bids')
+        .select(`
+            *,
+            auction_items (
+                id,
+                name,
+                brand,
+                image,
+                current_bid,
+                start_time,
+                duration,
+                status
+            )
+        `)
+        .eq('bidder_id', userEmail)
+        .order('bid_time', { ascending: false });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    // Return empty array if no data
+    if (!data || data.length === 0) {
+        return [];
+    }
+
+    // Transform data to include auction details at top level
+    const transformedData = data.map(bid => {
+        const auctionItem = bid.auction_items;
+        // Calculate end_time from start_time and duration
+        let endTime = null;
+        if (auctionItem?.start_time && auctionItem?.duration) {
+            const startDate = new Date(auctionItem.start_time);
+            endTime = new Date(startDate.getTime() + auctionItem.duration * 24 * 60 * 60 * 1000).toISOString();
+        }
+
+        return {
+            auction_id: bid.auction_id,
+            your_bid: bid.bid_amount,
+            bid_time: bid.bid_time,
+            auction_title: auctionItem?.name,
+            auction_brand: auctionItem?.brand,
+            auction_image: auctionItem?.image,
+            current_bid: auctionItem?.current_bid,
+            end_time: endTime,
+            has_ended: auctionItem?.status !== 'active',
+            is_winning: bid.bid_amount >= (auctionItem?.current_bid || 0)
+        };
+    });
+
+    return transformedData;
+};
+
 // Product management functions
 export const getProductsBySeller = async (sellerId) => {
     try {
@@ -277,3 +355,103 @@ export const getOrderById = async (orderId) => {
 
     return data;
 };
+
+// Address management functions
+export const getAddressesByUser = async (userEmail) => {
+    const { data, error } = await supabase
+        .from('addresses')
+        .select('*')
+        .eq('user_email', userEmail)
+        .order('is_default', { ascending: false })
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+};
+
+export const createAddress = async (addressData) => {
+    // If this address is set as default, unset all other default addresses for this user
+    if (addressData.is_default) {
+        await supabase
+            .from('addresses')
+            .update({ is_default: false })
+            .eq('user_email', addressData.user_email);
+    }
+
+    const { data, error } = await supabase
+        .from('addresses')
+        .insert([addressData])
+        .select()
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+};
+
+export const updateAddress = async (addressId, addressData) => {
+    // If this address is being set as default, unset all other default addresses for this user
+    if (addressData.is_default && addressData.user_email) {
+        await supabase
+            .from('addresses')
+            .update({ is_default: false })
+            .eq('user_email', addressData.user_email)
+            .neq('id', addressId);
+    }
+
+    const { data, error } = await supabase
+        .from('addresses')
+        .update(addressData)
+        .eq('id', addressId)
+        .select()
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+};
+
+export const deleteAddress = async (addressId) => {
+    const { data, error } = await supabase
+        .from('addresses')
+        .delete()
+        .eq('id', addressId)
+        .select()
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+};
+
+export const setDefaultAddress = async (addressId, userEmail) => {
+    // First, unset all default addresses for this user
+    await supabase
+        .from('addresses')
+        .update({ is_default: false })
+        .eq('user_email', userEmail);
+
+    // Then set this address as default
+    const { data, error } = await supabase
+        .from('addresses')
+        .update({ is_default: true })
+        .eq('id', addressId)
+        .select()
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+};
+
