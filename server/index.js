@@ -361,10 +361,37 @@ app.put('/api/addresses/:id/default', async (req, res) => {
 });
 
 // Rental endpoints
-// Create rental listing
+// Create rental listing - accepts both FormData (with image file) and JSON (with image URL)
 app.post('/api/rentals', upload.single('image'), async (req, res) => {
     try {
-        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+        let imageUrl = req.body.image; // From JSON request
+
+        // If image file was uploaded via FormData, upload to Supabase
+        if (req.file) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const filename = uniqueSuffix + path.extname(req.file.originalname);
+
+            const { data, error } = await supabase.storage
+                .from('Images')
+                .upload(filename, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) {
+                console.error('Supabase upload error:', error);
+                throw new Error(`Failed to upload image: ${error.message}`);
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('Images')
+                .getPublicUrl(filename);
+
+            imageUrl = publicUrl;
+        }
+
         const rentalData = {
             ...req.body,
             image: imageUrl,
@@ -372,7 +399,7 @@ app.post('/api/rentals', upload.single('image'), async (req, res) => {
             minimum_rental_days: parseInt(req.body.minimum_rental_days),
             maximum_rental_days: req.body.maximum_rental_days ? parseInt(req.body.maximum_rental_days) : null,
             security_deposit: parseFloat(req.body.security_deposit),
-            cleaning_fee_included: req.body.cleaning_fee_included === 'true',
+            cleaning_fee_included: req.body.cleaning_fee_included === 'true' || req.body.cleaning_fee_included === true,
         };
 
         const rental = await createRentalItem(rentalData);
@@ -464,14 +491,35 @@ app.put('/api/rentals/bookings/:id/status', async (req, res) => {
     }
 });
 
-// Update rental item
+// Update rental item - accepts both FormData (with image file) and JSON (with image URL)
 app.put('/api/rentals/:id', upload.single('image'), async (req, res) => {
     try {
         const updateData = { ...req.body };
 
-        // Only update image if a new one was uploaded
+        // If image file was uploaded via FormData, upload to Supabase
         if (req.file) {
-            updateData.image = `/uploads/${req.file.filename}`;
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const filename = uniqueSuffix + path.extname(req.file.originalname);
+
+            const { data, error } = await supabase.storage
+                .from('Images')
+                .upload(filename, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) {
+                console.error('Supabase upload error:', error);
+                throw new Error(`Failed to upload image: ${error.message}`);
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('Images')
+                .getPublicUrl(filename);
+
+            updateData.image = publicUrl;
         }
 
         // Parse numerical fields
@@ -486,6 +534,9 @@ app.put('/api/rentals/:id', upload.single('image'), async (req, res) => {
         }
         if (updateData.security_deposit) {
             updateData.security_deposit = parseFloat(updateData.security_deposit);
+        }
+        if (updateData.cleaning_fee_included !== undefined) {
+            updateData.cleaning_fee_included = updateData.cleaning_fee_included === 'true' || updateData.cleaning_fee_included === true;
         }
 
         const rental = await updateRentalItem(req.params.id, updateData);
