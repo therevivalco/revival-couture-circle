@@ -14,7 +14,9 @@ import {
     Heart,
     LogOut,
     User,
-    Calendar
+    Calendar,
+    Gift,
+    ChevronRight
 } from "lucide-react";
 
 const Account = () => {
@@ -63,6 +65,14 @@ const Account = () => {
             path: "/rent?tab=my-bookings",
             color: "text-cyan-600",
             bgColor: "bg-cyan-50",
+        },
+        {
+            title: "My Donations",
+            description: "View your donation history and coupons",
+            icon: Gift,
+            path: "/donate?tab=my-donations",
+            color: "text-emerald-600",
+            bgColor: "bg-emerald-50",
         },
         {
             title: "My Auctions",
@@ -126,31 +136,36 @@ const Account = () => {
                         </div>
                     </div>
 
-                    {/* Navigation Grid */}
+                    {/* Navigation List */}
                     <div>
                         <h2 className="text-2xl font-serif font-semibold mb-6">Quick Access</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {navigationCards.map((card) => {
-                                const Icon = card.icon;
-                                return (
-                                    <Card
-                                        key={card.path}
-                                        className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-neutral-200"
-                                        onClick={() => navigate(card.path)}
-                                    >
-                                        <CardHeader>
-                                            <div className={`w-12 h-12 rounded-lg ${card.bgColor} flex items-center justify-center mb-3`}>
-                                                <Icon className={`h-6 w-6 ${card.color}`} />
+                        <Card>
+                            <CardContent className="p-0">
+                                <div className="divide-y divide-neutral-100">
+                                    {navigationCards.map((card, index) => {
+                                        const Icon = card.icon;
+                                        return (
+                                            <div
+                                                key={card.path}
+                                                className="flex items-center justify-between p-4 hover:bg-neutral-50 cursor-pointer transition-colors group"
+                                                onClick={() => navigate(card.path)}
+                                            >
+                                                <div className="flex items-center gap-4 flex-1">
+                                                    <div className={`w-12 h-12 rounded-lg ${card.bgColor} flex items-center justify-center flex-shrink-0`}>
+                                                        <Icon className={`h-6 w-6 ${card.color}`} />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="font-semibold text-base mb-0.5">{card.title}</h3>
+                                                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight className="h-5 w-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
                                             </div>
-                                            <CardTitle className="text-xl">{card.title}</CardTitle>
-                                            <CardDescription className="text-sm">
-                                                {card.description}
-                                            </CardDescription>
-                                        </CardHeader>
-                                    </Card>
-                                );
-                            })}
-                        </div>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </div>

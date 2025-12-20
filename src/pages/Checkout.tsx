@@ -57,6 +57,12 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState("cod");
     const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+    // Coupon state
+    const [couponCode, setCouponCode] = useState("");
+    const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+    const [couponError, setCouponError] = useState("");
+    const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
     // Fetch saved addresses on mount
     useEffect(() => {
         const fetchAddresses = async () => {
@@ -136,7 +142,57 @@ const Checkout = () => {
         { id: "netbanking", name: "Net Banking", icon: Building2, description: "All major banks" },
     ];
 
-    const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const discount = appliedCoupon ? (subtotal * appliedCoupon.discount_percentage) / 100 : 0;
+    const totalAmount = subtotal - discount;
+
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) {
+            setCouponError("Please enter a coupon code");
+            return;
+        }
+
+        setIsValidatingCoupon(true);
+        setCouponError("");
+
+        try {
+            const response = await apiFetch('/api/coupons/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    code: couponCode.trim().toUpperCase(),
+                    userEmail: user?.email
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.valid) {
+                    setAppliedCoupon(result.coupon);
+                    toast.success(`Coupon applied! You saved ₹${((subtotal * result.coupon.discount_percentage) / 100).toFixed(2)}`);
+                    setCouponError("");
+                } else {
+                    setCouponError(result.message || "Invalid coupon code");
+                    setAppliedCoupon(null);
+                }
+            } else {
+                setCouponError("Failed to validate coupon");
+                setAppliedCoupon(null);
+            }
+        } catch (error) {
+            setCouponError("Failed to validate coupon");
+            setAppliedCoupon(null);
+        } finally {
+            setIsValidatingCoupon(false);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponCode("");
+        setCouponError("");
+        toast.info("Coupon removed");
+    };
 
     const handleInputChange = (field: string, value: string) => {
         setShippingDetails(prev => ({ ...prev, [field]: value }));
@@ -217,6 +273,8 @@ const Checkout = () => {
                 payment_status: paymentMethod === "cod" ? "pending" : "completed",
                 transaction_id: transactionId,
                 status: "confirmed",
+                coupon_id: appliedCoupon?.id || null,
+                discount_amount: discount,
                 orderItems: cart.map(item => ({
                     id: item.id,
                     name: item.name,
@@ -240,6 +298,18 @@ const Checkout = () => {
             }
 
             const order = await response.json();
+
+            // Mark coupon as used if one was applied
+            if (appliedCoupon) {
+                try {
+                    await apiFetch(`/api/coupons/use/${appliedCoupon.id}`, {
+                        method: 'POST'
+                    });
+                } catch (error) {
+                    console.error("Failed to mark coupon as used:", error);
+                    // Don't fail the order if coupon marking fails
+                }
+            }
 
             clearCart();
             toast.success("Order placed successfully!");
@@ -307,8 +377,8 @@ const Checkout = () => {
                                                         <Card
                                                             key={address.id}
                                                             className={`cursor-pointer transition-all ${selectedAddressId === address.id
-                                                                    ? "border-olive border-2 bg-olive/5"
-                                                                    : "hover:border-olive/50"
+                                                                ? "border-olive border-2 bg-olive/5"
+                                                                : "hover:border-olive/50"
                                                                 }`}
                                                             onClick={() => handleAddressSelect(address.id)}
                                                         >
@@ -316,8 +386,8 @@ const Checkout = () => {
                                                                 <div className="flex items-start gap-3">
                                                                     <div className="flex-shrink-0 mt-1">
                                                                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedAddressId === address.id
-                                                                                ? "border-olive bg-olive"
-                                                                                : "border-gray-300"
+                                                                            ? "border-olive bg-olive"
+                                                                            : "border-gray-300"
                                                                             }`}>
                                                                             {selectedAddressId === address.id && (
                                                                                 <div className="w-2 h-2 bg-white rounded-full" />
@@ -575,11 +645,66 @@ const Checkout = () => {
                                             </div>
                                         ))}
                                     </div>
+
+                                    {/* Coupon Section */}
+                                    <div className="border-t mt-4 pt-4">
+                                        <h4 className="font-medium mb-3">Have a Coupon?</h4>
+                                        {!appliedCoupon ? (
+                                            <div className="space-y-2">
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        placeholder="Enter coupon code"
+                                                        value={couponCode}
+                                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                                        disabled={isValidatingCoupon}
+                                                    />
+                                                    <Button
+                                                        onClick={handleApplyCoupon}
+                                                        disabled={isValidatingCoupon || !couponCode.trim()}
+                                                        size="sm"
+                                                    >
+                                                        {isValidatingCoupon ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : (
+                                                            "Apply"
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                                {couponError && (
+                                                    <p className="text-xs text-red-600">{couponError}</p>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="font-mono font-semibold text-green-700">{appliedCoupon.code}</p>
+                                                        <p className="text-xs text-green-600">{appliedCoupon.discount_percentage}% OFF applied</p>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={handleRemoveCoupon}
+                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div className="border-t mt-4 pt-4">
                                         <div className="flex justify-between mb-2">
                                             <span>Subtotal</span>
-                                            <span>₹{totalAmount.toLocaleString('en-IN')}</span>
+                                            <span>₹{subtotal.toLocaleString('en-IN')}</span>
                                         </div>
+                                        {appliedCoupon && (
+                                            <div className="flex justify-between mb-2 text-green-600">
+                                                <span>Discount ({appliedCoupon.discount_percentage}% OFF)</span>
+                                                <span>-₹{discount.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
                                         <div className="flex justify-between mb-2">
                                             <span>Shipping</span>
                                             <span className="text-green-600">FREE</span>

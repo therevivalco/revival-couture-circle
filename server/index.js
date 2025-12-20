@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { supabase, getAllProducts, createProduct, createAuction, getAllActiveAuctions, getAuctionById, placeBid, getAuctionBids, getAuctionsByUser, getBidsByUser, getProductsBySeller, updateProduct, deleteProduct, createOrder, getOrdersByUser, getOrderById, getAddressesByUser, createAddress, updateAddress, deleteAddress, setDefaultAddress } from './database.js';
 import { createRentalItem, getAllRentalItems, getRentalItemById, getRentalsByOwner, checkRentalAvailability, createRentalBooking, getBookingsByRenter, getBookingsForRentalItem, updateBookingStatus, updateRentalItem, deleteRentalItem } from './rental-database.js';
+import { createDonation, getUserDonations, getCouponsByUser, validateCoupon, useCoupon } from './donation-database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -499,6 +500,59 @@ app.delete('/api/rentals/:id', async (req, res) => {
     try {
         const rental = await deleteRentalItem(req.params.id);
         res.json({ message: 'Rental deleted successfully', rental });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ============= DONATION ENDPOINTS =============
+
+// Create donation
+app.post('/api/donations', async (req, res) => {
+    try {
+        const donation = await createDonation(req.body);
+        res.json(donation);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get user donations
+app.get('/api/donations/user/:email', async (req, res) => {
+    try {
+        const donations = await getUserDonations(req.params.email);
+        res.json(donations);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get user coupons
+app.get('/api/coupons/user/:email', async (req, res) => {
+    try {
+        const coupons = await getCouponsByUser(req.params.email);
+        res.json(coupons);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Validate coupon
+app.post('/api/coupons/validate', async (req, res) => {
+    try {
+        const { code, userEmail } = req.body;
+        const result = await validateCoupon(code, userEmail);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Use coupon
+app.post('/api/coupons/use/:id', async (req, res) => {
+    try {
+        const coupon = await useCoupon(req.params.id);
+        res.json(coupon);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
