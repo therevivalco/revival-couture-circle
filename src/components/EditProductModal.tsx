@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -29,6 +29,8 @@ interface Product {
     originalPrice: number;
     condition: string;
     category: string;
+    size: string;
+    product_type: string;
     image: string;
 }
 
@@ -48,6 +50,8 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
         originalPrice: "",
         condition: "",
         category: "",
+        size: "",
+        productType: "",
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -56,6 +60,15 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
 
     const conditions = ["Excellent", "Like New", "Good", "Fair"];
     const categories = ["For Her", "For Him", "Kids", "Accessories"];
+    const sizes = ["Free size", "XS", "S", "M", "L", "XL", "XXL"];
+    const productTypes = [
+        "T-Shirts", "Shirts", "Blouses", "Sweaters", "Hoodies",
+        "Jeans", "Pants", "Shorts", "Skirts",
+        "Dresses", "Jackets", "Coats",
+        "Sneakers", "Boots", "Sandals", "Heels",
+        "Bags", "Belts", "Hats", "Scarves", "Jewelry", "Watches",
+        "Other"
+    ];
 
     useEffect(() => {
         if (product && isOpen) {
@@ -67,6 +80,8 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                 originalPrice: product.originalPrice.toString(),
                 condition: product.condition,
                 category: product.category,
+                size: product.size || "",
+                productType: product.product_type || "",
             });
             setImagePreview(product.image);
             setImageFile(null);
@@ -348,7 +363,45 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="price">Selling Price (₹) *</Label>
+                                <Label htmlFor="size">Size *</Label>
+                                <Select
+                                    value={formData.size}
+                                    onValueChange={(value) => handleInputChange("size", value)}
+                                >
+                                    <SelectTrigger id="size">
+                                        <SelectValue placeholder="Select size" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {sizes.map((size) => (
+                                            <SelectItem key={size} value={size}>
+                                                {size}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="productType">Product Type *</Label>
+                                <Select
+                                    value={formData.productType}
+                                    onValueChange={(value) => handleInputChange("productType", value)}
+                                >
+                                    <SelectTrigger id="productType">
+                                        <SelectValue placeholder="Select product type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {productTypes.map((type) => (
+                                            <SelectItem key={type} value={type}>
+                                                {type}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="price">Selling Price (â‚¹) *</Label>
                                 <Input
                                     id="price"
                                     type="number"
@@ -361,7 +414,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="originalPrice">Original Price (₹) *</Label>
+                                <Label htmlFor="originalPrice">Original Price (â‚¹) *</Label>
                                 <Input
                                     id="originalPrice"
                                     type="number"
@@ -411,3 +464,5 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
 };
 
 export default EditProductModal;
+
+

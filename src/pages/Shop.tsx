@@ -1,4 +1,4 @@
-
+﻿
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -144,7 +144,10 @@ const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [sizeFilter, setSizeFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
   const [visibleProducts, setVisibleProducts] = useState(6);
 
@@ -186,22 +189,43 @@ const Shop = () => {
 
   useEffect(() => {
     const category = searchParams.get("category");
-    setActiveFilter(category || "All");
+    setCategoryFilter(category || "All");
   }, [searchParams]);
+
+  // Lock body scroll when filter sidebar is open
+  useEffect(() => {
+    if (isFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isFilterOpen]);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
-  const handleFilterClick = (filter) => {
+  const handleCategoryFilterClick = (filter) => {
     setVisibleProducts(6);
+    setCategoryFilter(filter);
     if (filter === "All") {
       setSearchParams({});
     } else {
       setSearchParams({ category: filter });
     }
     handleScrollTo(catalogRef);
+  };
+
+  const clearAllFilters = () => {
+    setCategoryFilter("All");
+    setSizeFilter("All");
+    setTypeFilter("All");
+    setVisibleProducts(6);
+    setSearchParams({});
   };
 
   const handleCategoryClick = (category) => {
@@ -223,8 +247,15 @@ const Shop = () => {
     }
   };
 
-  const filteredProducts = products.filter(p => activeFilter === "All" || p.category === activeFilter);
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = categoryFilter === "All" || p.category === categoryFilter;
+    const matchesSize = sizeFilter === "All" || p.size === sizeFilter;
+    const matchesType = typeFilter === "All" || p.product_type === typeFilter;
+    return matchesCategory && matchesSize && matchesType;
+  });
   const displayedProducts = sortProducts(filteredProducts);
+
+  const activeFilterCount = [categoryFilter, sizeFilter, typeFilter].filter(f => f !== "All").length;
 
   return (
     <div className="bg-[#FDFDF9] text-neutral-800 font-sans">
@@ -306,39 +337,26 @@ const Shop = () => {
 
         {/* Product Catalog Section */}
         <section ref={catalogRef} className="py-12">
-          <div className="sticky top-[60px] bg-[#FDFDF9]/80 backdrop-blur-sm z-20 py-4 mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span>Filter:</span>
-                {["All", "For Her", "For Him", "Kids", "Accessories"].map(filter => (
-                  <Button
-                    key={filter}
-                    variant="ghost"
-                    className={`rounded-full px-4 h-8 text-sm ${activeFilter === filter ? "bg-neutral-200" : ""}`}
-                    onClick={() => handleFilterClick(filter)}
-                  >
-                    {filter}
-                  </Button>
-                ))}
-              </div>
-              <div className="flex items-center gap-4 w-full md:w-auto">
-                <div className="relative w-full md:w-48">
+          <div className="sticky top-[60px] bg-[#FDFDF9]/80 backdrop-blur-sm z-20 py-4 mb-8 border-b">
+            <div className="flex justify-between items-center gap-4">
+              <Button variant="outline" onClick={() => setIsFilterOpen(true)} className="rounded-full gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                Filters {activeFilterCount > 0 && <span className="px-2 py-0.5 bg-olive text-white text-xs rounded-full">{activeFilterCount}</span>}
+              </Button>
+              <div className="flex items-center gap-4 flex-1">
+                <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
                   <Input placeholder="Search" className="rounded-full pl-9 h-9" />
                 </div>
                 <Select onValueChange={setSortBy} defaultValue={sortBy}>
-                  <SelectTrigger className="w-40 rounded-full h-9">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="price-asc">Price: Low–High</SelectItem>
-                    <SelectItem value="price-desc">Price: High–Low</SelectItem>
-                  </SelectContent>
+                  <SelectTrigger className="w-40 rounded-full h-9"><SelectValue placeholder="Sort by" /></SelectTrigger>
+                  <SelectContent><SelectItem value="newest">Newest</SelectItem><SelectItem value="price-asc">Price: Low–High</SelectItem><SelectItem value="price-desc">Price: High–Low</SelectItem></SelectContent>
                 </Select>
               </div>
             </div>
           </div>
+
+          {isFilterOpen && (<><div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsFilterOpen(false)} /><div className="fixed top-0 left-0 h-full w-80 bg-white z-50 shadow-xl overflow-y-auto" onWheel={(e) => e.stopPropagation()}><div className="p-6"><div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2"><h2 className="text-xl font-semibold">Filters</h2>{activeFilterCount > 0 && <span className="px-2 py-0.5 bg-olive text-white text-xs rounded-full">{activeFilterCount}</span>}</div><Button variant="ghost" size="icon" onClick={() => setIsFilterOpen(false)}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></Button></div>{activeFilterCount > 0 && <Button variant="outline" onClick={clearAllFilters} className="w-full mb-6">Clear All Filters</Button>}<div className="mb-6"><h3 className="font-medium mb-3">Category</h3><div className="flex flex-col gap-2">{["All", "For Her", "For Him", "Kids", "Accessories"].map(filter => <Button key={filter} variant={categoryFilter === filter ? "default" : "ghost"} className={`justify-start ${categoryFilter === filter ? "bg-olive text-white hover:bg-olive/90" : ""}`} onClick={() => { handleCategoryFilterClick(filter); setIsFilterOpen(false); }}>{filter}</Button>)}</div></div><div className="mb-6"><h3 className="font-medium mb-3">Size</h3><div className="grid grid-cols-3 gap-2">{["All", "Free size", "XS", "S", "M", "L", "XL", "XXL"].map(size => <Button key={size} variant={sizeFilter === size ? "default" : "outline"} size="sm" className={sizeFilter === size ? "bg-olive text-white hover:bg-olive/90" : ""} onClick={() => { setSizeFilter(size); setVisibleProducts(6); }}>{size}</Button>)}</div></div><div className="mb-6"><h3 className="font-medium mb-3">Type</h3><div className="flex flex-col gap-2">{["All", "T-Shirts", "Shirts", "Dresses", "Jeans", "Pants", "Jackets", "Shoes", "Bags", "Other"].map(type => <Button key={type} variant={typeFilter === type ? "default" : "ghost"} className={`justify-start ${typeFilter === type ? "bg-olive text-white hover:bg-olive/90" : ""}`} onClick={() => { setTypeFilter(type); setVisibleProducts(6); }}>{type}</Button>)}</div></div><Button onClick={() => setIsFilterOpen(false)} className="w-full bg-olive hover:bg-olive/90">Apply Filters</Button></div></div></>)}
 
           <motion.div
             layout
@@ -379,3 +397,6 @@ const Shop = () => {
 };
 
 export default Shop;
+
+
+

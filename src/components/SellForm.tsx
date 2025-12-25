@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,8 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
         originalPrice: "",
         condition: "",
         category: "",
+        size: "",
+        productType: "",
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -37,6 +39,15 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
 
     const conditions = ["Excellent", "Like New", "Good", "Fair"];
     const categories = ["For Her", "For Him", "Kids", "Accessories"];
+    const sizes = ["Free size", "XS", "S", "M", "L", "XL", "XXL"];
+    const productTypes = [
+        "T-Shirts", "Shirts", "Blouses", "Sweaters", "Hoodies",
+        "Jeans", "Pants", "Shorts", "Skirts",
+        "Dresses", "Jackets", "Coats",
+        "Sneakers", "Boots", "Sandals", "Heels",
+        "Bags", "Belts", "Hats", "Scarves", "Jewelry", "Watches",
+        "Other"
+    ];
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -116,7 +127,9 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
             !formData.price ||
             !formData.originalPrice ||
             !formData.condition ||
-            !formData.category
+            !formData.category ||
+            !formData.size ||
+            !formData.productType
         ) {
             toast.error("Please fill in all fields");
             return;
@@ -172,6 +185,8 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
                 originalPrice: "",
                 condition: "",
                 category: "",
+                size: "",
+                productType: "",
             });
             setImageFile(null);
             setImagePreview(null);
@@ -322,7 +337,45 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="originalPrice">Original Price (₹) *</Label>
+                        <Label htmlFor="size">Size *</Label>
+                        <Select
+                            value={formData.size}
+                            onValueChange={(value) => handleInputChange("size", value)}
+                        >
+                            <SelectTrigger id="size">
+                                <SelectValue placeholder="Select size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sizes.map((size) => (
+                                    <SelectItem key={size} value={size}>
+                                        {size}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="productType">Product Type *</Label>
+                        <Select
+                            value={formData.productType}
+                            onValueChange={(value) => handleInputChange("productType", value)}
+                        >
+                            <SelectTrigger id="productType">
+                                <SelectValue placeholder="Select product type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {productTypes.map((type) => (
+                                    <SelectItem key={type} value={type}>
+                                        {type}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="originalPrice">Original Price (â‚¹) *</Label>
                         <Input
                             id="originalPrice"
                             type="number"
@@ -336,7 +389,7 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="price">Selling Price (₹) *</Label>
+                        <Label htmlFor="price">Selling Price (â‚¹) *</Label>
                         <Input
                             id="price"
                             type="number"
@@ -377,3 +430,4 @@ const SellForm = ({ onSuccess }: SellFormProps) => {
 };
 
 export default SellForm;
+

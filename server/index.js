@@ -99,10 +99,10 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 // Create product endpoint
 app.post('/api/products', async (req, res) => {
     try {
-        const { name, brand, material, price, originalPrice, condition, category, image, seller_id } = req.body;
+        const { name, brand, material, price, originalPrice, condition, category, size, product_type, image, seller_id } = req.body;
 
         // Validate required fields
-        if (!name || !brand || !material || !price || !originalPrice || !condition || !category || !image) {
+        if (!name || !brand || !material || !price || !originalPrice || !condition || !category || !size || !product_type || !image) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
@@ -114,6 +114,8 @@ app.post('/api/products', async (req, res) => {
             originalPrice: parseFloat(originalPrice),
             condition,
             category,
+            size,
+            product_type,
             image,
             seller_id: seller_id || 'anonymous'
         };
@@ -253,7 +255,7 @@ app.get('/api/products/user/:sellerId', async (req, res) => {
 // Update product
 app.put('/api/products/:id', async (req, res) => {
     try {
-        const { name, brand, material, price, originalPrice, condition, category, image } = req.body;
+        const { name, brand, material, price, originalPrice, condition, category, size, product_type, image } = req.body;
 
         const productData = {};
         if (name) productData.name = name;
@@ -263,6 +265,8 @@ app.put('/api/products/:id', async (req, res) => {
         if (originalPrice) productData.originalPrice = parseFloat(originalPrice);
         if (condition) productData.condition = condition;
         if (category) productData.category = category;
+        if (size) productData.size = size;
+        if (product_type) productData.product_type = product_type;
         if (image) productData.image = image;
 
         const updatedProduct = await updateProduct(req.params.id, productData);

@@ -32,7 +32,6 @@ interface ProductDetailModalProps {
 }
 
 const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProps) => {
-  const [selectedSize, setSelectedSize] = useState<string>("");
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { user } = useAuth();
@@ -110,7 +109,6 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
 
   if (!product) return null;
 
-  const sizes = ["XS", "S", "M", "L", "XL"];
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   const handleAddToCart = () => {
@@ -119,8 +117,9 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
       navigate("/login");
       return;
     }
-    if (product && selectedSize) {
-      addToCart(product, selectedSize);
+    if (product) {
+      // Use the product's size directly since it's a resale item with only one size
+      addToCart(product, product.size || "M");
       onClose();
     }
   };
@@ -182,27 +181,12 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
               </p>
             </div>
 
-            {/* Size Selection */}
-            <div>
-              <h3 className="font-semibold mb-3">Select Size</h3>
-              <div className="flex gap-3">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`w-14 h-14 rounded-lg border-2 transition-all ${selectedSize === size
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border hover:border-primary"
-                      }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Product Specifications */}
             <div className="space-y-3 pt-4 border-t">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Size</span>
+                <span className="font-medium">{product.size || "One Size"}</span>
+              </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Material</span>
                 <span className="font-medium">{product.material || "Premium Fabric"}</span>
@@ -234,10 +218,9 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
               <Button
                 size="lg"
                 className="flex-1 rounded-full"
-                disabled={!selectedSize}
                 onClick={handleAddToCart}
               >
-                {selectedSize ? "Add to Bag" : "Select Size"}
+                Add to Bag
               </Button>
               <Button
                 size="lg"
