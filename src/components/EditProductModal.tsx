@@ -51,7 +51,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
         condition: "",
         category: "",
         size: "",
-        productType: "",
+        product_type: "",
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -81,7 +81,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                 condition: product.condition,
                 category: product.category,
                 size: product.size || "",
-                productType: product.product_type || "",
+                product_type: product.product_type || "",
             });
             setImagePreview(product.image);
             setImageFile(null);
@@ -382,12 +382,12 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="productType">Product Type *</Label>
+                                <Label htmlFor="product_type">Product Type *</Label>
                                 <Select
-                                    value={formData.productType}
-                                    onValueChange={(value) => handleInputChange("productType", value)}
+                                    value={formData.product_type}
+                                    onValueChange={(value) => handleInputChange("product_type", value)}
                                 >
-                                    <SelectTrigger id="productType">
+                                    <SelectTrigger id="product_type">
                                         <SelectValue placeholder="Select product type" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -401,7 +401,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="price">Selling Price (â‚¹) *</Label>
+                                <Label htmlFor="price">Selling Price (₹) *</Label>
                                 <Input
                                     id="price"
                                     type="number"
@@ -414,7 +414,7 @@ const EditProductModal = ({ product, isOpen, onClose, onSuccess }: EditProductMo
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="originalPrice">Original Price (â‚¹) *</Label>
+                                <Label htmlFor="originalPrice">Original Price (₹) *</Label>
                                 <Input
                                     id="originalPrice"
                                     type="number"

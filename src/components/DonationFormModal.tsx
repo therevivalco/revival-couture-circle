@@ -42,6 +42,17 @@ export const DonationFormModal = ({ isOpen, onClose, userEmail }: DonationFormMo
 
     // Step 2 - Address & Pickup
     const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+    const [useNewAddress, setUseNewAddress] = useState(false);
+    const [newAddress, setNewAddress] = useState({
+        name: "",
+        phone: "",
+        address_line1: "",
+        address_line2: "",
+        city: "",
+        state: "",
+        pincode: "",
+        address_type: "Home",
+    });
     const [pickupDate, setPickupDate] = useState("");
     const [pickupType, setPickupType] = useState("");
 
@@ -105,7 +116,31 @@ export const DonationFormModal = ({ isOpen, onClose, userEmail }: DonationFormMo
             }
             setStep(2);
         } else if (step === 2) {
-            if (!selectedAddressId || !pickupDate || !pickupType) {
+            // Validate address
+            if (useNewAddress || addresses.length === 0) {
+                // Validate new address form
+                if (!newAddress.name || !newAddress.phone || !newAddress.address_line1 ||
+                    !newAddress.city || !newAddress.state || !newAddress.pincode) {
+                    toast.error("Please fill all required address fields");
+                    return;
+                }
+                if (newAddress.phone.length !== 10) {
+                    toast.error("Phone number must be 10 digits");
+                    return;
+                }
+                if (newAddress.pincode.length !== 6) {
+                    toast.error("Pincode must be 6 digits");
+                    return;
+                }
+            } else {
+                // Validate saved address selection
+                if (!selectedAddressId) {
+                    toast.error("Please select an address");
+                    return;
+                }
+            }
+
+            if (!pickupDate || !pickupType) {
                 toast.error("Please fill all required fields");
                 return;
             }
@@ -282,33 +317,177 @@ export const DonationFormModal = ({ isOpen, onClose, userEmail }: DonationFormMo
                         <div className="space-y-6">
                             <div>
                                 <Label>Select Address *</Label>
-                                {addresses.length === 0 ? (
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                        No saved addresses. Please add an address in your account settings.
-                                    </p>
+                                {!useNewAddress && addresses.length > 0 ? (
+                                    <>
+                                        <div className="space-y-2 mt-2">
+                                            {addresses.map((addr) => (
+                                                <Card
+                                                    key={addr.id}
+                                                    className={`cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-primary bg-primary/5' : ''}`}
+                                                    onClick={() => setSelectedAddressId(addr.id)}
+                                                >
+                                                    <CardContent className="p-4">
+                                                        <p className="font-medium">{addr.address_line1}</p>
+                                                        {addr.address_line2 && <p className="text-sm">{addr.address_line2}</p>}
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {addr.city}, {addr.state} - {addr.postal_code}
+                                                        </p>
+                                                        {addr.is_default && (
+                                                            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded mt-1 inline-block">
+                                                                Default
+                                                            </span>
+                                                        )}
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => setUseNewAddress(true)}
+                                            className="w-full mt-3"
+                                        >
+                                            Use a different address
+                                        </Button>
+                                    </>
                                 ) : (
-                                    <div className="space-y-2 mt-2">
-                                        {addresses.map((addr) => (
-                                            <Card
-                                                key={addr.id}
-                                                className={`cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-primary bg-primary/5' : ''}`}
-                                                onClick={() => setSelectedAddressId(addr.id)}
+                                    <>
+                                        {addresses.length > 0 && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                onClick={() => setUseNewAddress(false)}
+                                                size="sm"
+                                                className="mb-3"
                                             >
-                                                <CardContent className="p-4">
-                                                    <p className="font-medium">{addr.address_line1}</p>
-                                                    {addr.address_line2 && <p className="text-sm">{addr.address_line2}</p>}
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {addr.city}, {addr.state} - {addr.postal_code}
-                                                    </p>
-                                                    {addr.is_default && (
-                                                        <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded mt-1 inline-block">
-                                                            Default
-                                                        </span>
-                                                    )}
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
+                                                ← Back to saved addresses
+                                            </Button>
+                                        )}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="name">Full Name *</Label>
+                                                <Input
+                                                    id="name"
+                                                    value={newAddress.name}
+                                                    onChange={(e) => setNewAddress({ ...newAddress, name: e.target.value })}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phone">Phone Number *</Label>
+                                                <Input
+                                                    id="phone"
+                                                    type="tel"
+                                                    value={newAddress.phone}
+                                                    onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+                                                    maxLength={10}
+                                                    pattern="[0-9]{10}"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2 space-y-2">
+                                                <Label htmlFor="address_line1">Address Line 1 *</Label>
+                                                <Input
+                                                    id="address_line1"
+                                                    value={newAddress.address_line1}
+                                                    onChange={(e) => setNewAddress({ ...newAddress, address_line1: e.target.value })}
+                                                    placeholder="House No., Building Name"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2 space-y-2">
+                                                <Label htmlFor="address_line2">Address Line 2</Label>
+                                                <Input
+                                                    id="address_line2"
+                                                    value={newAddress.address_line2}
+                                                    onChange={(e) => setNewAddress({ ...newAddress, address_line2: e.target.value })}
+                                                    placeholder="Road Name, Area, Colony"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="city">City *</Label>
+                                                <Input
+                                                    id="city"
+                                                    value={newAddress.city}
+                                                    onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="state">State *</Label>
+                                                <Select
+                                                    value={newAddress.state}
+                                                    onValueChange={(value) => setNewAddress({ ...newAddress, state: value })}
+                                                >
+                                                    <SelectTrigger id="state">
+                                                        <SelectValue placeholder="Select state" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Andhra Pradesh">Andhra Pradesh</SelectItem>
+                                                        <SelectItem value="Arunachal Pradesh">Arunachal Pradesh</SelectItem>
+                                                        <SelectItem value="Assam">Assam</SelectItem>
+                                                        <SelectItem value="Bihar">Bihar</SelectItem>
+                                                        <SelectItem value="Chhattisgarh">Chhattisgarh</SelectItem>
+                                                        <SelectItem value="Goa">Goa</SelectItem>
+                                                        <SelectItem value="Gujarat">Gujarat</SelectItem>
+                                                        <SelectItem value="Haryana">Haryana</SelectItem>
+                                                        <SelectItem value="Himachal Pradesh">Himachal Pradesh</SelectItem>
+                                                        <SelectItem value="Jharkhand">Jharkhand</SelectItem>
+                                                        <SelectItem value="Karnataka">Karnataka</SelectItem>
+                                                        <SelectItem value="Kerala">Kerala</SelectItem>
+                                                        <SelectItem value="Madhya Pradesh">Madhya Pradesh</SelectItem>
+                                                        <SelectItem value="Maharashtra">Maharashtra</SelectItem>
+                                                        <SelectItem value="Manipur">Manipur</SelectItem>
+                                                        <SelectItem value="Meghalaya">Meghalaya</SelectItem>
+                                                        <SelectItem value="Mizoram">Mizoram</SelectItem>
+                                                        <SelectItem value="Nagaland">Nagaland</SelectItem>
+                                                        <SelectItem value="Odisha">Odisha</SelectItem>
+                                                        <SelectItem value="Punjab">Punjab</SelectItem>
+                                                        <SelectItem value="Rajasthan">Rajasthan</SelectItem>
+                                                        <SelectItem value="Sikkim">Sikkim</SelectItem>
+                                                        <SelectItem value="Tamil Nadu">Tamil Nadu</SelectItem>
+                                                        <SelectItem value="Telangana">Telangana</SelectItem>
+                                                        <SelectItem value="Tripura">Tripura</SelectItem>
+                                                        <SelectItem value="Uttar Pradesh">Uttar Pradesh</SelectItem>
+                                                        <SelectItem value="Uttarakhand">Uttarakhand</SelectItem>
+                                                        <SelectItem value="West Bengal">West Bengal</SelectItem>
+                                                        <SelectItem value="Delhi">Delhi</SelectItem>
+                                                        <SelectItem value="Jammu and Kashmir">Jammu and Kashmir</SelectItem>
+                                                        <SelectItem value="Ladakh">Ladakh</SelectItem>
+                                                        <SelectItem value="Puducherry">Puducherry</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="pincode">Pincode *</Label>
+                                                <Input
+                                                    id="pincode"
+                                                    type="tel"
+                                                    value={newAddress.pincode}
+                                                    onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
+                                                    maxLength={6}
+                                                    pattern="[0-9]{6}"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="address_type">Address Type *</Label>
+                                                <Select
+                                                    value={newAddress.address_type}
+                                                    onValueChange={(value) => setNewAddress({ ...newAddress, address_type: value })}
+                                                >
+                                                    <SelectTrigger id="address_type">
+                                                        <SelectValue placeholder="Select address type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Home">🏠 Home</SelectItem>
+                                                        <SelectItem value="Work">💼 Work</SelectItem>
+                                                        <SelectItem value="Other">📍 Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    </>
                                 )}
                             </div>
 

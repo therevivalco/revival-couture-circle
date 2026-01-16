@@ -236,6 +236,12 @@ const Rent = () => {
             return;
         }
 
+        // Prevent booking own rental
+        if (selectedRental?.owner_email === user.email) {
+            toast.error("You cannot rent your own item");
+            return;
+        }
+
         if (!availabilityResult?.available) {
             toast.error("Please check availability first");
             return;
@@ -462,13 +468,15 @@ const Rent = () => {
 
                                             if (response.ok) {
                                                 toast.success("Rental listing created!");
+                                                e.currentTarget.reset();
                                                 fetchMyRentals();
                                                 setActiveTab("my-rentals");
-                                                e.currentTarget.reset();
                                             } else {
-                                                toast.error("Failed to create listing");
+                                                const errorData = await response.json();
+                                                toast.error(errorData.error || "Failed to create listing");
                                             }
                                         } catch (error) {
+                                            console.error("Error creating rental:", error);
                                             toast.error("Failed to create listing");
                                         }
                                     }}>

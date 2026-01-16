@@ -23,6 +23,7 @@ interface Product {
   color?: string;
   care?: string;
   seller?: string;
+  seller_id?: string;
 }
 
 interface ProductDetailModalProps {
@@ -37,6 +38,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
   const { user } = useAuth();
   const navigate = useNavigate();
   const isWishlisted = product ? isInWishlist(product.id) : false;
+  const isOwnProduct = product?.seller_id === user?.email;
 
   const handleWishlistToggle = () => {
     if (!user) {
@@ -219,14 +221,18 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
                 size="lg"
                 className="flex-1 rounded-full"
                 onClick={handleAddToCart}
+                disabled={isOwnProduct}
+                title={isOwnProduct ? "You cannot buy your own product" : ""}
               >
-                Add to Bag
+                {isOwnProduct ? "Your Product" : "Add to Bag"}
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="rounded-full"
                 onClick={handleWishlistToggle}
+                disabled={isOwnProduct}
+                title={isOwnProduct ? "You cannot wishlist your own product" : ""}
               >
                 <Heart
                   className={`h-5 w-5 ${isWishlisted ? "fill-current text-primary" : ""}`}

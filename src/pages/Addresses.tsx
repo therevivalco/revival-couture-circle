@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Plus, Edit, Trash2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
@@ -21,6 +22,7 @@ interface Address {
     city: string;
     state: string;
     pincode: string;
+    address_type: string;
     is_default: boolean;
 }
 
@@ -39,6 +41,7 @@ const Addresses = () => {
         city: "",
         state: "",
         pincode: "",
+        address_type: "Home",
         is_default: false,
     });
 
@@ -52,6 +55,13 @@ const Addresses = () => {
             fetchAddresses();
         }
     }, [user, loading, navigate]);
+
+    // Reset form when dialog closes
+    useEffect(() => {
+        if (!isDialogOpen) {
+            resetForm();
+        }
+    }, [isDialogOpen]);
 
     const fetchAddresses = async () => {
         try {
@@ -160,6 +170,7 @@ const Addresses = () => {
             city: address.city,
             state: address.state,
             pincode: address.pincode,
+            address_type: address.address_type || "Home",
             is_default: address.is_default,
         });
         setIsDialogOpen(true);
@@ -174,6 +185,7 @@ const Addresses = () => {
             city: "",
             state: "",
             pincode: "",
+            address_type: "Home",
             is_default: false,
         });
         setEditingAddress(null);
@@ -200,109 +212,179 @@ const Addresses = () => {
                                 Manage your saved shipping addresses
                             </p>
                         </div>
-                        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <DialogTrigger asChild>
-                                <Button onClick={() => setIsDialogOpen(true)}>
+                                <Button>
                                     <Plus className="h-4 w-4 mr-2" />
                                     Add Address
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        {editingAddress ? "Edit Address" : "Add New Address"}
-                                    </DialogTitle>
-                                </DialogHeader>
-                                <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <Label htmlFor="name">Full Name *</Label>
+                            <DialogContent className="max-w-2xl max-h-[90vh] p-0">
+                                <div
+                                    className="max-h-[90vh] overflow-y-auto px-6 pb-6"
+                                    onWheel={(e) => e.stopPropagation()}
+                                >
+                                    <DialogHeader className="sticky top-0 bg-background z-10 pt-6 pb-4">
+                                        <DialogTitle className="text-xl font-serif">
+                                            {editingAddress ? "Edit Address" : "Add New Address"}
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <form onSubmit={handleSubmit} className="space-y-5">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="name">Full Name *</Label>
+                                                <Input
+                                                    id="name"
+                                                    value={formData.name}
+                                                    onChange={(e) => handleInputChange("name", e.target.value)}
+                                                    className="border-gray-300 focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phone">Phone Number *</Label>
+                                                <Input
+                                                    id="phone"
+                                                    type="tel"
+                                                    value={formData.phone}
+                                                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                                                    className="border-gray-300 focus:border-primary"
+                                                    placeholder="+91 XXXXX XXXXX"
+                                                    maxLength={10}
+                                                    pattern="[0-9]{10}"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="address_line1">Address Line 1 *</Label>
                                             <Input
-                                                id="name"
-                                                value={formData.name}
-                                                onChange={(e) => handleInputChange("name", e.target.value)}
+                                                id="address_line1"
+                                                value={formData.address_line1}
+                                                onChange={(e) => handleInputChange("address_line1", e.target.value)}
+                                                className="border-gray-300 focus:border-primary"
+                                                placeholder="House No., Building Name"
                                                 required
                                             />
                                         </div>
-                                        <div>
-                                            <Label htmlFor="phone">Phone Number *</Label>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="address_line2">Address Line 2</Label>
                                             <Input
-                                                id="phone"
-                                                value={formData.phone}
-                                                onChange={(e) => handleInputChange("phone", e.target.value)}
+                                                id="address_line2"
+                                                value={formData.address_line2}
+                                                onChange={(e) => handleInputChange("address_line2", e.target.value)}
+                                                className="border-gray-300 focus:border-primary"
+                                                placeholder="Road Name, Area, Colony"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="city">City *</Label>
+                                                <Input
+                                                    id="city"
+                                                    value={formData.city}
+                                                    onChange={(e) => handleInputChange("city", e.target.value)}
+                                                    className="border-gray-300 focus:border-primary"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="state">State *</Label>
+                                                <Select
+                                                    value={formData.state}
+                                                    onValueChange={(value) => handleInputChange("state", value)}
+                                                >
+                                                    <SelectTrigger id="state" className="border-gray-300 focus:border-primary">
+                                                        <SelectValue placeholder="Select state" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Andhra Pradesh">Andhra Pradesh</SelectItem>
+                                                        <SelectItem value="Arunachal Pradesh">Arunachal Pradesh</SelectItem>
+                                                        <SelectItem value="Assam">Assam</SelectItem>
+                                                        <SelectItem value="Bihar">Bihar</SelectItem>
+                                                        <SelectItem value="Chhattisgarh">Chhattisgarh</SelectItem>
+                                                        <SelectItem value="Goa">Goa</SelectItem>
+                                                        <SelectItem value="Gujarat">Gujarat</SelectItem>
+                                                        <SelectItem value="Haryana">Haryana</SelectItem>
+                                                        <SelectItem value="Himachal Pradesh">Himachal Pradesh</SelectItem>
+                                                        <SelectItem value="Jharkhand">Jharkhand</SelectItem>
+                                                        <SelectItem value="Karnataka">Karnataka</SelectItem>
+                                                        <SelectItem value="Kerala">Kerala</SelectItem>
+                                                        <SelectItem value="Madhya Pradesh">Madhya Pradesh</SelectItem>
+                                                        <SelectItem value="Maharashtra">Maharashtra</SelectItem>
+                                                        <SelectItem value="Manipur">Manipur</SelectItem>
+                                                        <SelectItem value="Meghalaya">Meghalaya</SelectItem>
+                                                        <SelectItem value="Mizoram">Mizoram</SelectItem>
+                                                        <SelectItem value="Nagaland">Nagaland</SelectItem>
+                                                        <SelectItem value="Odisha">Odisha</SelectItem>
+                                                        <SelectItem value="Punjab">Punjab</SelectItem>
+                                                        <SelectItem value="Rajasthan">Rajasthan</SelectItem>
+                                                        <SelectItem value="Sikkim">Sikkim</SelectItem>
+                                                        <SelectItem value="Tamil Nadu">Tamil Nadu</SelectItem>
+                                                        <SelectItem value="Telangana">Telangana</SelectItem>
+                                                        <SelectItem value="Tripura">Tripura</SelectItem>
+                                                        <SelectItem value="Uttar Pradesh">Uttar Pradesh</SelectItem>
+                                                        <SelectItem value="Uttarakhand">Uttarakhand</SelectItem>
+                                                        <SelectItem value="West Bengal">West Bengal</SelectItem>
+                                                        <SelectItem value="Delhi">Delhi</SelectItem>
+                                                        <SelectItem value="Jammu and Kashmir">Jammu and Kashmir</SelectItem>
+                                                        <SelectItem value="Ladakh">Ladakh</SelectItem>
+                                                        <SelectItem value="Puducherry">Puducherry</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pincode">Pincode *</Label>
+                                            <Input
+                                                id="pincode"
+                                                type="tel"
+                                                value={formData.pincode}
+                                                onChange={(e) => handleInputChange("pincode", e.target.value)}
+                                                className="border-gray-300 focus:border-primary w-full sm:w-1/2"
+                                                maxLength={6}
+                                                pattern="[0-9]{6}"
                                                 required
                                             />
                                         </div>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="address_line1">Address Line 1 *</Label>
-                                        <Input
-                                            id="address_line1"
-                                            value={formData.address_line1}
-                                            onChange={(e) => handleInputChange("address_line1", e.target.value)}
-                                            placeholder="House No., Building Name"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="address_line2">Address Line 2</Label>
-                                        <Input
-                                            id="address_line2"
-                                            value={formData.address_line2}
-                                            onChange={(e) => handleInputChange("address_line2", e.target.value)}
-                                            placeholder="Road Name, Area, Colony"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <Label htmlFor="city">City *</Label>
-                                            <Input
-                                                id="city"
-                                                value={formData.city}
-                                                onChange={(e) => handleInputChange("city", e.target.value)}
-                                                required
-                                            />
+                                        <div className="space-y-2">
+                                            <Label htmlFor="address_type">Address Type *</Label>
+                                            <Select
+                                                value={formData.address_type}
+                                                onValueChange={(value) => handleInputChange("address_type", value)}
+                                            >
+                                                <SelectTrigger id="address_type" className="border-gray-300 focus:border-primary w-full sm:w-1/2">
+                                                    <SelectValue placeholder="Select address type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Home">🏠 Home</SelectItem>
+                                                    <SelectItem value="Work">💼 Work</SelectItem>
+                                                    <SelectItem value="Other">📍 Other</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                        <div>
-                                            <Label htmlFor="state">State *</Label>
-                                            <Input
-                                                id="state"
-                                                value={formData.state}
-                                                onChange={(e) => handleInputChange("state", e.target.value)}
-                                                required
+                                        <div className="flex items-center gap-3 py-2">
+                                            <input
+                                                type="checkbox"
+                                                id="is_default"
+                                                checked={formData.is_default}
+                                                onChange={(e) => handleInputChange("is_default", e.target.checked)}
+                                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                                             />
+                                            <Label htmlFor="is_default" className="cursor-pointer text-sm">
+                                                Set as default address
+                                            </Label>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="pincode">Pincode *</Label>
-                                        <Input
-                                            id="pincode"
-                                            value={formData.pincode}
-                                            onChange={(e) => handleInputChange("pincode", e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            id="is_default"
-                                            checked={formData.is_default}
-                                            onChange={(e) => handleInputChange("is_default", e.target.checked)}
-                                            className="rounded"
-                                        />
-                                        <Label htmlFor="is_default" className="cursor-pointer">
-                                            Set as default address
-                                        </Label>
-                                    </div>
-                                    <div className="flex gap-2 pt-4">
-                                        <Button type="submit" className="flex-1">
-                                            {editingAddress ? "Update Address" : "Add Address"}
-                                        </Button>
-                                        <Button type="button" variant="outline" onClick={handleDialogClose}>
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                </form>
+                                        <div className="flex flex-row gap-3 pt-4 border-t">
+                                            <Button type="submit" className="flex-1">
+                                                {editingAddress ? "Update Address" : "Add Address"}
+                                            </Button>
+                                            <Button type="button" variant="outline" onClick={handleDialogClose} className="px-6">
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
                             </DialogContent>
                         </Dialog>
                     </div>
@@ -330,6 +412,12 @@ const Addresses = () => {
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <h3 className="font-semibold text-lg">{address.name}</h3>
+                                                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                                        {address.address_type === 'Home' && '🏠'}
+                                                        {address.address_type === 'Work' && '💼'}
+                                                        {address.address_type === 'Other' && '📍'}
+                                                        {' '}{address.address_type}
+                                                    </span>
                                                     {address.is_default && (
                                                         <span className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                                                             <Star className="h-3 w-3 fill-current" />

@@ -30,6 +30,7 @@ interface SavedAddress {
     city: string;
     state: string;
     pincode: string;
+    address_type: string;
     is_default: boolean;
 }
 
@@ -126,6 +127,8 @@ const Checkout = () => {
         });
     };
 
+    const [saveAddress, setSaveAddress] = useState(true); // Default to true to save address
+
     const indianStates = [
         "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
         "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
@@ -215,8 +218,54 @@ const Checkout = () => {
         return true;
     };
 
-    const handleNext = () => {
-        if (currentStep === 1 && !validateStep1()) return;
+    const handleNext = async () => {
+        if (currentStep === 1) {
+            if (!validateStep1()) return;
+
+            // Save address if it's a new address and user wants to save it
+            // This includes first-time users (no saved addresses) or users entering a different address
+            if ((useNewAddress || savedAddresses.length === 0) && saveAddress && user?.email) {
+                try {
+                    const addressData = {
+                        user_email: user.email,
+                        name: shippingDetails.name,
+                        phone: shippingDetails.phone,
+                        address_line1: shippingDetails.addressLine1,
+                        address_line2: shippingDetails.addressLine2 || "",
+                        city: shippingDetails.city,
+                        state: shippingDetails.state,
+                        pincode: shippingDetails.pincode,
+                        address_type: "Home", // Default to Home for addresses saved from checkout
+                        is_default: savedAddresses.length === 0, // Set as default if it's the first address
+                    };
+
+                    console.log("Saving address:", addressData);
+
+                    const response = await apiFetch("/api/addresses", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(addressData),
+                    });
+
+                    if (response.ok) {
+                        toast.success("Address saved successfully!");
+                        // Refresh addresses list
+                        const addresses = await apiFetch(`/api/addresses/user/${user.email}`);
+                        if (addresses.ok) {
+                            setSavedAddresses(await addresses.json());
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        console.error("Failed to save address:", errorData);
+                        toast.error("Failed to save address, but you can continue with checkout");
+                    }
+                } catch (error) {
+                    console.error("Failed to save address:", error);
+                    // Don't block checkout if address save fails
+                    toast.error("Failed to save address, but you can continue with checkout");
+                }
+            }
+        }
         setCurrentStep(prev => prev + 1);
     };
 
@@ -522,6 +571,18 @@ const Checkout = () => {
                                                             maxLength={6}
                                                         />
                                                     </div>
+                                                </div>
+
+                                                {/* Save Address Checkbox */}
+                                                <div className="flex items-center gap-3 mt-4">
+                                                    <Checkbox
+                                                        id="saveAddress"
+                                                        checked={saveAddress}
+                                                        onCheckedChange={(checked) => setSaveAddress(checked as boolean)}
+                                                    />
+                                                    <Label htmlFor="saveAddress" className="cursor-pointer text-sm">
+                                                        Save this address for future orders
+                                                    </Label>
                                                 </div>
                                             </>
                                         )}

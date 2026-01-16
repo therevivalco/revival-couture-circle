@@ -35,6 +35,7 @@ const AuctionDetailModal = ({ auction, isOpen, onClose, onBidPlaced }: AuctionDe
     const [bids, setBids] = useState<Bid[]>([]);
     const [isLoadingBids, setIsLoadingBids] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
+    const isOwnAuction = auction?.seller_id === user?.email;
 
     useEffect(() => {
         if (auction && isOpen) {
@@ -71,6 +72,12 @@ const AuctionDetailModal = ({ auction, isOpen, onClose, onBidPlaced }: AuctionDe
 
         if (!user) {
             toast.error("Please log in to place a bid");
+            return;
+        }
+
+        // Prevent bidding on own auction
+        if (isOwnAuction) {
+            toast.error("You cannot bid on your own auction");
             return;
         }
 
@@ -188,18 +195,24 @@ const AuctionDetailModal = ({ auction, isOpen, onClose, onBidPlaced }: AuctionDe
                                             min={auction.current_bid + 1}
                                             step="1"
                                             required
+                                            disabled={isOwnAuction}
                                         />
+                                        {isOwnAuction && (
+                                            <p className="text-sm text-muted-foreground">You cannot bid on your own auction</p>
+                                        )}
                                     </div>
                                     <Button
                                         type="submit"
                                         className="w-full"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || isOwnAuction}
                                     >
                                         {isSubmitting ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                 Placing Bid...
                                             </>
+                                        ) : isOwnAuction ? (
+                                            "Your Auction"
                                         ) : (
                                             "Place Bid"
                                         )}
